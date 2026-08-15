@@ -3,9 +3,6 @@ name: Deploy Landing Page to GitHub Pages
 on:
   push:
     branches: ["main", "master"]
-    paths:
-      - "Landingpage.html"
-      - ".github/workflows/pages.yml"
   workflow_dispatch:
 
 permissions:
@@ -33,10 +30,10 @@ jobs:
       - name: Prepare Pages content
         run: |
           mkdir -p _site
-          # Rename to index.html so GitHub Pages serves it at the root URL
-          cp Landingpage.html _site/index.html
-          # Copy icons so they're available at the Pages URL too
+          cp index.html _site/index.html
+          cp Landingpage.html _site/Landingpage.html
           cp -r icons _site/icons
+          if [ -f vercel.json ]; then cp vercel.json _site/; fi
           echo "Pages content ready:"
           ls -la _site/
 
