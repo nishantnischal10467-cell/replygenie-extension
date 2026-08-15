@@ -1,0 +1,61 @@
+name: Lint & Validate
+
+on:
+  push:
+    branches: ["main", "master"]
+  pull_request:
+    branches: ["main", "master"]
+
+jobs:
+  lint:
+    name: JS Syntax Check + Manifest Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Check JavaScript syntax (node --check)
+        run: |
+          echo "Checking JS files..."
+          node --check background.js
+          node --check content.js
+          node --check popup.js
+          node --check options.js
+          node --check storage.js
+          node --check templates.js
+          echo "All JS files passed syntax check ✅"
+
+      - name: Validate manifest.json
+        run: |
+          node -e "
+            const fs = require('fs');
+            try {
+              const manifest = JSON.parse(fs.readFileSync('manifest.json', 'utf8'));
+              if (!manifest.manifest_version) throw new Error('Missing manifest_version');
+              if (!manifest.name) throw new Error('Missing name');
+              if (!manifest.version) throw new Error('Missing version');
+              console.log('manifest.json is valid ✅');
+              console.log('  name:', manifest.name);
+              console.log('  version:', manifest.version);
+              console.log('  manifest_version:', manifest.manifest_version);
+            } catch (e) {
+              console.error('manifest.json validation failed:', e.message);
+              process.exit(1);
+            }
+          "
+
+      - name: Check icons exist
+        run: |
+          for icon in icons/icon16.png icons/icon48.png icons/icon128.png; do
+            if [ ! -f "$icon" ]; then
+              echo "Missing icon: $icon ❌"
+              exit 1
+            fi
+          done
+          echo "All icons present ✅"

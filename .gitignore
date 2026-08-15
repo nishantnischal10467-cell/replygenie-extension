@@ -1,0 +1,41 @@
+# ── OS & editor junk ──────────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+desktop.ini
+
+# VS Code / JetBrains / Vim
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ── Node (if you add tests or tooling later) ──────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+yarn.lock
+
+# ── Build output ──────────────────────────────────────────────────────────────
+dist/
+build/
+*.zip
+*.crx
+*.pem
+
+# ── Environment / secrets ─────────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+secrets.json
+
+# ── Logs ─────────────────────────────────────────────────────────────────────
+*.log
+logs/

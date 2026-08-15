@@ -1,0 +1,90 @@
+name: Release — Package Extension
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    name: Package & Publish Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Run syntax checks before packaging
+        run: |
+          node --check background.js
+          node --check content.js
+          node --check popup.js
+          node --check options.js
+          node --check storage.js
+          node --check templates.js
+          node -e "JSON.parse(require('fs').readFileSync('manifest.json','utf8')); console.log('manifest.json OK')"
+
+      - name: Extract version from tag
+        id: version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Package extension (zip)
+        run: |
+          VERSION=${{ steps.version.outputs.VERSION }}
+          FILENAME="replygenie-extension-v${VERSION}.zip"
+
+          # Only include the files Chrome actually needs to load the extension.
+          # Exclude: landing page, GitHub files, docs, dev artifacts.
+          zip -r "$FILENAME" \
+            manifest.json \
+            background.js \
+            content.js \
+            content.css \
+            popup.html \
+            popup.js \
+            popup.css \
+            options.html \
+            options.js \
+            options.css \
+            storage.js \
+            templates.js \
+            icons/
+
+          echo "Created: $FILENAME"
+          ls -lh "$FILENAME"
+          echo "FILENAME=$FILENAME" >> $GITHUB_ENV
+
+      - name: Generate release notes
+        id: release_notes
+        run: |
+          VERSION=${{ steps.version.outputs.VERSION }}
+          cat > release_notes.md << EOF
+          ## ReplyGenie v${VERSION}
+
+          ### Install (Developer Mode)
+          1. Download \`${{ env.FILENAME }}\` and unzip it.
+          2. Open \`chrome://extensions\` → Enable **Developer mode**.
+          3. Click **Load unpacked** and select the unzipped folder.
+
+          ### Changes
+          <!-- Add changelog here or link to CHANGELOG.md -->
+
+          See [README](https://github.com/${{ github.repository }}/blob/main/README.md) for full setup instructions.
+          EOF
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "ReplyGenie v${{ steps.version.outputs.VERSION }}"
+          body_path: release_notes.md
+          files: ${{ env.FILENAME }}
+          draft: false
+          prerelease: ${{ contains(github.ref, '-beta') || contains(github.ref, '-alpha') || contains(github.ref, '-rc') }}

@@ -1,0 +1,137 @@
+.rg-suggest-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 8px;
+  padding: 6px 10px;
+  border-radius: 9999px;
+  color: #5B4CFA;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: background 0.15s ease;
+  user-select: none;
+}
+
+.rg-suggest-btn:hover {
+  background: rgba(91, 76, 250, 0.1);
+}
+
+.rg-suggest-btn svg {
+  color: #5B4CFA;
+}
+
+#rg-suggestion-card {
+  z-index: 999999;
+  width: 320px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+  border: 1px solid #eceef2;
+  padding: 14px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.rg-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 600;
+  color: #0f1419;
+  margin-bottom: 10px;
+}
+
+.rg-close {
+  border: none;
+  background: transparent;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  color: #536471;
+}
+
+.rg-textarea {
+  width: 100%;
+  min-height: 90px;
+  resize: vertical;
+  border: 1px solid #e1e4e8;
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 14px;
+  font-family: inherit;
+  color: #0f1419;
+  box-sizing: border-box;
+}
+
+.rg-card-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.rg-card-footer button {
+  border: none;
+  border-radius: 9999px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.rg-regen {
+  background: #f0f1f5;
+  color: #0f1419;
+}
+
+.rg-copy {
+  background: #5B4CFA;
+  color: #fff;
+}
+
+.rg-spinner {
+  width: 22px;
+  height: 22px;
+  margin: 10px auto;
+  border: 3px solid #eceef2;
+  border-top-color: #5B4CFA;
+  border-radius: 50%;
+  animation: rg-spin 0.8s linear infinite;
+}
+
+@keyframes rg-spin {
+  to { transform: rotate(360deg); }
+}
+
+.rg-error {
+  font-size: 13px;
+  color: #d93025;
+}
+
+/* ---- Cooldown state ---- */
+
+.rg-suggest-btn.rg-cooldown {
+  color: #e07b00;
+  cursor: not-allowed;
+  opacity: 0.75;
+  animation: rg-cooldown-pulse 1s ease-in-out infinite;
+}
+
+.rg-suggest-btn.rg-cooldown:hover {
+  background: rgba(224, 123, 0, 0.08);
+}
+
+.rg-suggest-btn.rg-cooldown span {
+  font-variant-numeric: tabular-nums; /* keeps width stable as digits change */
+  letter-spacing: -0.01em;
+}
+
+.rg-suggest-btn.rg-cooldown svg {
+  color: #e07b00;
+}
+
+@keyframes rg-cooldown-pulse {
+  0%, 100% { opacity: 0.75; }
+  50%       { opacity: 0.45; }
+}

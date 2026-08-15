@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>ReplyGenie</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <img class="brand-icon" src="icons/icon48.png" alt="" />
+        <div>
+          <div class="brand-title">ReplyGenie</div>
+          <div class="brand-sub">AI replies for X</div>
+        </div>
+      </div>
+    </header>
+
+    <section class="card">
+      <div class="row space-between">
+        <div>
+          <div class="label-strong" id="key-status">No API key set</div>
+          <div class="label-muted" id="key-detail">Add one in options</div>
+        </div>
+        <button class="pill-btn" id="open-options">Options</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="label-strong">Update your reply style</div>
+      <button class="cta-btn" id="edit-profile-btn">Update my replies</button>
+    </section>
+
+    <section class="card">
+      <div class="row space-between">
+        <div>
+          <div class="label-strong">Auto copy</div>
+          <div class="label-muted">Generate &amp; copy on click</div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="autoCopy" />
+          <span class="slider"></span>
+        </label>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="row space-between">
+        <div>
+          <div class="label-strong">Jump to posts worth opening</div>
+          <div class="label-muted">Highlights posts likely worth a reply in your feed.</div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="jumpToPosts" />
+          <span class="slider"></span>
+        </label>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="row space-between">
+        <div>
+          <div class="label-strong">About you</div>
+          <div class="label-muted">Tell ReplyGenie who you are</div>
+        </div>
+        <button class="pill-btn" id="edit-profile-btn-2">Edit profile</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="label-strong">Tone</div>
+      <select id="tone">
+        <option>Friendly</option>
+        <option>Professional</option>
+        <option>Witty</option>
+        <option>Supportive</option>
+        <option>Concise</option>
+      </select>
+
+      <div class="label-strong" style="margin-top: 14px;">Length</div>
+      <div class="length-pills" id="length-pills">
+        <button class="length-pill" data-value="Short">Short</button>
+        <button class="length-pill" data-value="Medium">Medium</button>
+        <button class="length-pill" data-value="Long">Long</button>
+      </div>
+    </section>
+
+    <footer class="hint">
+      Open a post on x.com and click the ✨ Reply button in the action bar.
+    </footer>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
