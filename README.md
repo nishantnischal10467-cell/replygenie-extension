@@ -3,6 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Manifest Version](https://img.shields.io/badge/Manifest-V3-green.svg)](manifest.json)
 [![Chrome Extension](https://img.shields.io/badge/Chrome-Extension-yellow.svg?logo=google-chrome)](https://developer.chrome.com/docs/extensions/)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fnishantnischal10467-cell%2Freplygenie-extension)
 
 > A Chrome extension that reads the post you're viewing on X/Twitter (text, images, video), drafts a contextual reply in your voice using GPT-4o-mini, and copies it to your clipboard so you just paste and post.
 
@@ -84,6 +85,15 @@ User clicks ✨ Reply
   → Streams reply back to content.js
   → Content.js shows card + auto-copies to clipboard
 ```
+
+---
+
+## 🌐 Vercel Deployment
+
+The project includes `vercel.json` and a root `index.html` (Landing Page) optimized for Vercel deployment:
+
+1. Click the **Deploy with Vercel** button above or connect your GitHub repository in the [Vercel Dashboard](https://vercel.com/new).
+2. Vercel will automatically detect `index.html` / `vercel.json` and deploy the landing page cleanly.
 
 ---
 
