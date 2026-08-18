@@ -1,14 +1,13 @@
 /* ==========================================================================
    ReplyGenie Landing Page Design System — Vercel Aesthetic (DESIGN.md)
-   Palette: Monochromatic Ink (#171717 / #050505), Stark White (#ffffff),
-   Hairline Borders (rgba(255,255,255,0.08)), Mesh Accents (Cyan/Violet/Blue)
+   Supports Light & Dark Themes with smooth transitions
    ========================================================================== */
 
-:root {
+:root, :root[data-theme="dark"] {
   --bg-dark: #050505;
   --bg-canvas: #0a0a0c;
   --bg-card: rgba(255, 255, 255, 0.025);
-  --bg-card-hover: rgba(255, 255, 255, 0.045);
+  --bg-card-hover: rgba(255, 255, 255, 0.05);
   --border-hairline: rgba(255, 255, 255, 0.08);
   --border-strong: rgba(255, 255, 255, 0.16);
   --border-focus: #0070f3;
@@ -29,6 +28,42 @@
   
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
+  
+  --btn-primary-bg: #ffffff;
+  --btn-primary-text: #000000;
+  --demo-card-bg: #0f1117;
+  --demo-box-bg: #050608;
+  --header-bg: rgba(5, 5, 5, 0.8);
+}
+
+:root[data-theme="light"] {
+  --bg-dark: #ffffff;
+  --bg-canvas: #fafafa;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f5f5f5;
+  --border-hairline: #ebebeb;
+  --border-strong: #cccccc;
+  --border-focus: #0070f3;
+  
+  --text-main: #171717;
+  --text-muted: #555555;
+  --text-dim: #888888;
+  
+  --accent-blue: #0070f3;
+  --accent-cyan: #0096c7;
+  --accent-violet: #7928ca;
+  --accent-magenta: #eb367f;
+  --accent-amber: #d97706;
+  
+  --gradient-brand: linear-gradient(135deg, #171717 0%, #333333 40%, #0070f3 100%);
+  --gradient-mesh: radial-gradient(circle at 50% -100px, rgba(0, 112, 243, 0.08), transparent 70%);
+  --gradient-border: linear-gradient(135deg, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.02) 100%);
+  
+  --btn-primary-bg: #171717;
+  --btn-primary-text: #ffffff;
+  --demo-card-bg: #ffffff;
+  --demo-box-bg: #f5f5f5;
+  --header-bg: rgba(255, 255, 255, 0.85);
 }
 
 * {
@@ -48,8 +83,9 @@ body {
   line-height: 1.6;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.3s ease, color 0.3s ease;
   background-image: 
-    radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+    radial-gradient(var(--border-hairline) 1px, transparent 1px);
   background-size: 32px 32px;
 }
 
@@ -81,9 +117,10 @@ header {
   z-index: 100;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  background: rgba(5, 5, 5, 0.75);
+  background: var(--header-bg);
   border-bottom: 1px solid var(--border-hairline);
   padding: 16px 0;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .header-inner {
@@ -98,7 +135,7 @@ header {
   gap: 12px;
   font-weight: 700;
   font-size: 1.1rem;
-  color: #fff;
+  color: var(--text-main);
   text-decoration: none;
   letter-spacing: -0.02em;
 }
@@ -115,7 +152,7 @@ header {
   font-size: 0.7rem;
   padding: 2px 8px;
   border-radius: 99px;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--bg-card-hover);
   border: 1px solid var(--border-hairline);
   color: var(--text-muted);
 }
@@ -123,7 +160,7 @@ header {
 nav {
   display: flex;
   align-items: center;
-  gap: 28px;
+  gap: 20px;
 }
 
 nav a {
@@ -135,7 +172,33 @@ nav a {
 }
 
 nav a:hover {
-  color: #fff;
+  color: var(--text-main);
+}
+
+/* Theme Switcher Toggle */
+.theme-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-hairline);
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.theme-toggle-btn:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-strong);
+}
+
+.theme-toggle-btn svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
 }
 
 /* Buttons */
@@ -154,28 +217,27 @@ nav a:hover {
 }
 
 .btn-primary {
-  background: #ffffff;
-  color: #000000;
-  border: 1px solid #ffffff;
-  box-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+  border: 1px solid var(--btn-primary-bg);
+  box-shadow: 0 0 20px rgba(0, 112, 243, 0.15);
 }
 
 .btn-primary:hover {
-  background: #ededed;
+  opacity: 0.9;
   transform: translateY(-1px);
-  box-shadow: 0 0 25px rgba(255, 255, 255, 0.25);
+  box-shadow: 0 0 25px rgba(0, 112, 243, 0.25);
 }
 
 .btn-secondary {
-  background: rgba(255, 255, 255, 0.04);
-  color: #ededed;
+  background: var(--bg-card);
+  color: var(--text-main);
   border: 1px solid var(--border-hairline);
 }
 
 .btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--bg-card-hover);
   border-color: var(--border-strong);
-  color: #ffffff;
 }
 
 /* Hero Section */
@@ -192,7 +254,7 @@ nav a:hover {
   gap: 8px;
   padding: 6px 14px;
   border-radius: 99px;
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--bg-card);
   border: 1px solid var(--border-hairline);
   font-family: var(--font-mono);
   font-size: 0.8rem;
@@ -261,8 +323,9 @@ h1 {
   max-width: 720px;
   margin: 50px auto 0;
   text-align: left;
-  box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.8), 0 0 1px 1px rgba(255, 255, 255, 0.05);
+  box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.4), 0 0 1px 1px var(--border-hairline);
   position: relative;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .window-header {
@@ -283,7 +346,7 @@ h1 {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--border-strong);
 }
 
 .window-title {
@@ -295,7 +358,7 @@ h1 {
 }
 
 .tweet-card {
-  background: rgba(255, 255, 255, 0.015);
+  background: var(--bg-card);
   border: 1px solid var(--border-hairline);
   border-radius: 10px;
   padding: 20px;
@@ -313,14 +376,14 @@ h1 {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #262626 0%, #171717 100%);
+  background: var(--btn-primary-bg);
   border: 1px solid var(--border-hairline);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
   font-size: 0.9rem;
-  color: #fff;
+  color: var(--btn-primary-text);
 }
 
 .author-meta {
@@ -329,7 +392,7 @@ h1 {
 
 .author-name {
   font-weight: 600;
-  color: #fff;
+  color: var(--text-main);
   font-size: 0.95rem;
 }
 
@@ -341,7 +404,7 @@ h1 {
 
 .tweet-content {
   font-size: 0.98rem;
-  color: #e5e5e5;
+  color: var(--text-main);
   margin-bottom: 16px;
   line-height: 1.5;
 }
@@ -364,7 +427,7 @@ h1 {
 .demo-reply-trigger {
   background: rgba(0, 112, 243, 0.12);
   border: 1px solid rgba(0, 112, 243, 0.4);
-  color: #388bfd;
+  color: #0070f3;
   padding: 5px 12px;
   border-radius: 99px;
   font-size: 0.82rem;
@@ -379,17 +442,17 @@ h1 {
 .demo-reply-trigger:hover {
   background: rgba(0, 112, 243, 0.25);
   border-color: #0070f3;
-  color: #ffffff;
 }
 
 /* Injected ReplyGenie Suggestion Card Mockup */
 .suggestion-card-mock {
-  background: #0f1117;
+  background: var(--demo-card-bg);
   border: 1px solid rgba(0, 112, 243, 0.35);
   border-radius: 12px;
   padding: 18px;
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
   position: relative;
+  transition: background-color 0.3s ease;
 }
 
 .card-meta {
@@ -402,7 +465,7 @@ h1 {
 .card-tag {
   font-family: var(--font-mono);
   font-size: 0.72rem;
-  color: #388bfd;
+  color: #0070f3;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   font-weight: 600;
@@ -424,7 +487,7 @@ h1 {
 }
 
 .tone-pill {
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--bg-card-hover);
   border: 1px solid var(--border-hairline);
   color: var(--text-muted);
   padding: 4px 10px;
@@ -435,21 +498,23 @@ h1 {
 }
 
 .tone-pill.active {
-  background: rgba(0, 112, 243, 0.2);
+  background: rgba(0, 112, 243, 0.15);
   border-color: #0070f3;
-  color: #fff;
+  color: var(--text-main);
+  font-weight: 600;
 }
 
 .generated-text-box {
-  background: #050608;
+  background: var(--demo-box-bg);
   border: 1px solid var(--border-hairline);
   border-radius: 8px;
   padding: 12px 14px;
   font-size: 0.92rem;
-  color: #ededed;
+  color: var(--text-main);
   min-height: 72px;
   line-height: 1.5;
   margin-bottom: 14px;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .card-actions {
@@ -486,13 +551,14 @@ h1 {
 }
 
 .btn-sm-ghost {
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--bg-card-hover);
   color: var(--text-muted);
+  border: 1px solid var(--border-hairline);
 }
 
 .btn-sm-ghost:hover {
-  background: rgba(255, 255, 255, 0.12);
-  color: #fff;
+  color: var(--text-main);
+  border-color: var(--border-strong);
 }
 
 .btn-sm-primary {
@@ -529,7 +595,7 @@ h1 {
   font-size: 2.2rem;
   font-weight: 700;
   letter-spacing: -0.025em;
-  color: #ffffff;
+  color: var(--text-main);
   margin-bottom: 16px;
 }
 
@@ -569,20 +635,20 @@ h1 {
   width: 40px;
   height: 40px;
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--bg-card-hover);
   border: 1px solid var(--border-hairline);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.2rem;
   margin-bottom: 20px;
-  color: #fff;
+  color: var(--text-main);
 }
 
 .bento-card h3 {
   font-size: 1.15rem;
   font-weight: 600;
-  color: #fff;
+  color: var(--text-main);
   margin-bottom: 10px;
   letter-spacing: -0.01em;
 }
@@ -601,7 +667,7 @@ h1 {
   margin-top: 16px;
   padding: 2px 6px;
   border-radius: 4px;
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--bg-card-hover);
 }
 
 /* Workflow / Steps */
@@ -629,7 +695,7 @@ h1 {
 .step-box h4 {
   font-size: 1rem;
   font-weight: 600;
-  color: #fff;
+  color: var(--text-main);
   margin-bottom: 8px;
 }
 
@@ -639,7 +705,7 @@ h1 {
 }
 
 .code-snippet {
-  background: #000000;
+  background: var(--demo-box-bg);
   border: 1px solid var(--border-hairline);
   border-radius: 8px;
   padding: 12px;
@@ -669,7 +735,7 @@ h1 {
 .faq-item h4 {
   font-size: 1rem;
   font-weight: 600;
-  color: #fff;
+  color: var(--text-main);
   margin-bottom: 8px;
 }
 
@@ -694,7 +760,7 @@ footer a {
 }
 
 footer a:hover {
-  color: #fff;
+  color: var(--text-main);
 }
 
 .footer-nav {
