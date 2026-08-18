@@ -1,0 +1,299 @@
+/* ReplyGenie Options / Profile Setup - Vercel Design System (DESIGN.md) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: #050505;
+  color: #ededed;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.wrap {
+  max-width: 640px;
+  margin: 40px auto;
+  background: #0a0a0c;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 36px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+}
+
+h1 {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+  color: #ffffff;
+}
+
+h2 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #ffffff;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  margin: 28px 0;
+}
+
+.note {
+  font-size: 13px;
+  color: #a1a1a1;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.note code {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: #388bfd;
+}
+
+.field {
+  margin-bottom: 22px;
+}
+
+.field label {
+  display: block;
+  font-weight: 600;
+  font-size: 13px;
+  margin-bottom: 8px;
+  color: #ffffff;
+}
+
+.field input,
+.field textarea,
+.styled-select {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+  background-color: #050505;
+  color: #ededed;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.field input:focus,
+.field textarea:focus,
+.styled-select:focus {
+  border-color: #0070f3;
+  box-shadow: 0 0 0 1px #0070f3;
+}
+
+.styled-select {
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.field-inline {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.hint {
+  font-size: 11px;
+  color: #666666;
+  margin-top: 6px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.hint a {
+  color: #0070f3;
+  text-decoration: none;
+}
+
+.hint a:hover {
+  text-decoration: underline;
+}
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip-row button {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+  color: #a1a1a1;
+  border-radius: 9999px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.chip-row button:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #ededed;
+}
+
+.chip-row button.active {
+  background: rgba(0, 112, 243, 0.2);
+  border-color: #0070f3;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* Template Database Manager */
+
+.tpl-db-section {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.tpl-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 240px;
+  overflow-y: auto;
+  margin-bottom: 14px;
+  padding-right: 4px;
+}
+
+.tpl-item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #050505;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.tpl-text {
+  color: #ededed;
+  word-break: break-word;
+}
+
+.tpl-del-btn {
+  background: transparent;
+  border: none;
+  color: #666666;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0 4px;
+  margin-left: 8px;
+  line-height: 1;
+  transition: color 0.15s ease;
+}
+
+.tpl-del-btn:hover {
+  color: #ff4d4d;
+}
+
+.empty-tpl {
+  font-size: 12px;
+  color: #666666;
+  font-style: italic;
+  padding: 12px 0;
+  text-align: center;
+}
+
+.add-tpl-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.add-tpl-row input {
+  flex: 1;
+}
+
+.primary-sub {
+  background: #0070f3 !important;
+  color: #fff !important;
+  border-color: #0070f3 !important;
+  margin-top: 0 !important;
+}
+
+.danger-link {
+  color: #ff4d4d !important;
+  border-color: rgba(255, 77, 77, 0.3) !important;
+  background: rgba(255, 77, 77, 0.05) !important;
+  margin-top: 0 !important;
+}
+
+.danger-link:hover {
+  background: rgba(255, 77, 77, 0.15) !important;
+}
+
+.tpl-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.save-btn {
+  width: 100%;
+  background: #ffffff;
+  color: #000000;
+  border: 1px solid #ffffff;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 12px;
+  transition: all 0.15s ease;
+}
+
+.save-btn:hover {
+  background: #ededed;
+}
+
+.secondary-btn {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: #ededed;
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 6px;
+}
+
+.secondary-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+.saved-msg {
+  text-align: center;
+  font-size: 13px;
+  color: #50e3c2;
+  margin-top: 12px;
+  height: 16px;
+  font-family: 'JetBrains Mono', monospace;
+}

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ReplyGenie — AI Replies for X (Twitter) in Your Voice</title>
+  <meta name="description" content="Draft thoughtful, high-converting X/Twitter replies in 1-click using AI trained on your own voice. Bring your own OpenAI API key." />
+  
+  <!-- Favicon & Brand Icons -->
+  <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="shortcut icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-title" content="ReplyGenie" />
+  <link rel="manifest" href="/site.webmanifest" />
+
+  <!-- Modern Developer Fonts & Stylesheet -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="src/landing/landing.css" />
+</head>
+<body>
+
+  <div class="bg-mesh"></div>
+
+  <div class="container">
+    <!-- Header Navigation -->
+    <header>
+      <div class="header-inner">
+        <a href="#" class="logo">
+          <img src="/favicon-96x96.png" alt="ReplyGenie Logo" />
+          ReplyGenie
+          <span class="logo-badge">v1.0 MV3</span>
+        </a>
+        <nav>
+          <a href="#features">Features</a>
+          <a href="#how-it-works">How it Works</a>
+          <a href="#privacy">Privacy</a>
+          <a href="https://github.com/nishantnischal10467-cell/replygenie-extension" target="_blank">GitHub</a>
+          <a href="https://github.com/nishantnischal10467-cell/replygenie-extension#install-unpacked-for-testingpersonal-use" class="btn btn-primary">Install Extension</a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="badge-pill">
+        <span class="badge-dot"></span>
+        <span>✨ Manifest V3 Chrome Extension • BYO API Key</span>
+      </div>
+      
+      <h1>AI replies on X, drafted in your authentic voice.</h1>
+      
+      <p>
+        Stop staring at empty reply boxes. ReplyGenie analyzes tweet context, learns your writing voice from past posts, and drafts sharp, high-converting replies in 1 click.
+      </p>
+
+      <div class="hero-actions">
+        <a href="https://github.com/nishantnischal10467-cell/replygenie-extension" class="btn btn-primary" target="_blank">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+          Get on GitHub
+        </a>
+        <a href="#how-it-works" class="btn btn-secondary">Setup Guide</a>
+      </div>
+
+      <div class="hero-features-strip">
+        <span>🔒 BYO OpenAI API Key</span>
+        <span>⚡ Zero Server Tracking</span>
+        <span>🧠 Local Voice Memory</span>
+      </div>
+
+      <!-- Live Interactive Demo Window -->
+      <div class="demo-window">
+        <div class="window-header">
+          <div class="window-dots">
+            <div class="window-dot"></div>
+            <div class="window-dot"></div>
+            <div class="window-dot"></div>
+          </div>
+          <div class="window-title">Interactive Live Demo — x.com Feed</div>
+        </div>
+
+        <div class="tweet-card">
+          <div class="tweet-author">
+            <div class="avatar">N</div>
+            <div class="author-meta">
+              <div class="author-name">Naval Ravikant</div>
+              <div class="author-handle">@naval</div>
+            </div>
+          </div>
+          <div class="tweet-content">
+            If you can't code, write books and blogs, record podcasts and videos. Leverage is earned through high-value output.
+          </div>
+          <div class="tweet-bar">
+            <div class="tweet-stats">
+              <span>💬 412</span>
+              <span>🔁 1.8K</span>
+              <span>❤️ 12.4K</span>
+            </div>
+            <button class="demo-reply-trigger" id="demo-trigger-btn">
+              <span>✨ Reply</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Injected Card Simulation -->
+        <div class="suggestion-card-mock">
+          <div class="card-meta">
+            <span class="card-tag">ReplyGenie Draft</span>
+            <span class="card-status" id="demo-status">● Ready</span>
+          </div>
+
+          <div class="tone-selector-mini">
+            <button class="tone-pill active" onclick="setDemoTone(this, 'witty')">Witty</button>
+            <button class="tone-pill" onclick="setDemoTone(this, 'insightful')">Insightful</button>
+            <button class="tone-pill" onclick="setDemoTone(this, 'concise')">Concise</button>
+          </div>
+
+          <div class="generated-text-box" id="demo-reply-text">
+            Specific knowledge compounds even faster when media meets code — the real edge is shipping both in public.
+          </div>
+
+          <div class="card-actions">
+            <span class="copy-toast" id="copy-toast">✓ Copied to clipboard</span>
+            <div class="action-btns">
+              <button class="btn-sm btn-sm-ghost" onclick="regenDemoReply()">Regenerate</button>
+              <button class="btn-sm btn-sm-primary" onclick="copyDemoReply()">Copy Reply</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bento Grid Features -->
+    <section class="section" id="features">
+      <div class="section-header">
+        <div class="section-label">Engineered Features</div>
+        <h2 class="section-title">Built for meaningful engagement.</h2>
+        <p class="section-desc">No generic AI fluff. Every reply uses structured angles and learns your personal voice.</p>
+      </div>
+
+      <div class="bento-grid">
+        <div class="bento-card span-2">
+          <div class="bento-icon">🎯</div>
+          <h3>25 Structural Angles & Anti-Fluff Engine</h3>
+          <p>Rotates through 25 proven conversation angles — sharp questions, reframes, data insights, and counter-perspectives — ensuring your replies never sound robotic or repetitive.</p>
+          <span class="bento-tag">PROMPT_ENGINEERING_V2</span>
+        </div>
+
+        <div class="bento-card">
+          <div class="bento-icon">🧠</div>
+          <h3>Local Voice Learning</h3>
+          <p>Quietly samples your manual replies on X to adopt your specific vocabulary, sentence structure, and style without sending data to third-party servers.</p>
+          <span class="bento-tag">CHROME_STORAGE_LOCAL</span>
+        </div>
+
+        <div class="bento-card">
+          <div class="bento-icon">⚡</div>
+          <h3>Template Short-Circuit</h3>
+          <p>Instantly suggests quick templates for common interactions (thanks, congrats, agreement) without wasting OpenAI API tokens.</p>
+          <span class="bento-tag">ZERO_TOKEN_LATENCY</span>
+        </div>
+
+        <div class="bento-card span-2">
+          <div class="bento-icon">🔒</div>
+          <h3>Client-Side Privacy & BYO Key</h3>
+          <p>Your OpenAI API key remains exclusively inside your browser's local sync storage. All completions fire directly to OpenAI's official endpoint with zero middleman server logging.</p>
+          <span class="bento-tag">DIRECT_HTTPS_OPENAI</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Setup Guide -->
+    <section class="section" id="how-it-works">
+      <div class="section-header">
+        <div class="section-label">Installation</div>
+        <h2 class="section-title">Up and running in 2 minutes.</h2>
+        <p class="section-desc">Load unpacked directly in Chrome for personal or developer use.</p>
+      </div>
+
+      <div class="steps-grid">
+        <div class="step-box">
+          <div class="step-num">STEP 01</div>
+          <h4>Clone Repository</h4>
+          <p>Download or git clone the repo locally to your machine.</p>
+          <div class="code-snippet">git clone https://github.com/...</div>
+        </div>
+
+        <div class="step-box">
+          <div class="step-num">STEP 02</div>
+          <h4>Load Unpacked</h4>
+          <p>Open <code>chrome://extensions</code>, toggle Developer Mode, click <strong>Load unpacked</strong>.</p>
+        </div>
+
+        <div class="step-box">
+          <div class="step-num">STEP 03</div>
+          <h4>Add API Key</h4>
+          <p>Open ReplyGenie Options and paste your OpenAI key (starts with <code>sk-proj-</code>).</p>
+        </div>
+
+        <div class="step-box">
+          <div class="step-num">STEP 04</div>
+          <h4>Start Replying</h4>
+          <p>Visit x.com, click ✨ Reply on any post, and paste the auto-copied reply.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Security & Privacy FAQ -->
+    <section class="section" id="privacy">
+      <div class="section-header">
+        <div class="section-label">Security & FAQ</div>
+        <h2 class="section-title">Frequently Asked Questions</h2>
+      </div>
+
+      <div class="faq-list">
+        <div class="faq-item">
+          <h4>Does ReplyGenie store my API key on any server?</h4>
+          <p>No. ReplyGenie has zero backend servers. Your key is stored locally in <code>chrome.storage.sync</code> and requests are dispatched straight from your browser to <code>api.openai.com</code>.</p>
+        </div>
+        <div class="faq-item">
+          <h4>How does the Voice Learning feature work?</h4>
+          <p>When you post a native reply on X, ReplyGenie listens to the submit event and appends a small sample of your written text to your local profile storage (up to 15 samples) to fine-tune future prompt context.</p>
+        </div>
+        <div class="faq-item">
+          <h4>Is ReplyGenie free and open-source?</h4>
+          <p>Yes. ReplyGenie is 100% open-source under the MIT License. You only pay OpenAI directly for your token usage (fractions of a cent per reply using gpt-4o-mini).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <div class="footer-nav">
+        <a href="#features">Features</a>
+        <a href="#how-it-works">Setup Guide</a>
+        <a href="#privacy">Privacy</a>
+        <a href="https://github.com/nishantnischal10467-cell/replygenie-extension" target="_blank">GitHub</a>
+      </div>
+      <p>© 2026 ReplyGenie. Open source under the MIT License.</p>
+      <p style="margin-top: 6px; font-family: var(--font-mono); font-size: 0.78rem;">Not affiliated with X (Twitter) or OpenAI.</p>
+    </footer>
+  </div>
+
+  <script src="src/landing/demo.js"></script>
+</body>
+</html>

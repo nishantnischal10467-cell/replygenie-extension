@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>ReplyGenie — Profile & Settings</title>
+  <link rel="stylesheet" href="css/options.css" />
+</head>
+<body>
+  <div class="wrap">
+    <h1>Tell us about you</h1>
+    <p class="note">
+      Reply style itself isn't picked here alone — ReplyGenie also learns your actual voice
+      from replies you send yourself. Reply to a few posts manually on X after this and
+      it'll start matching how you actually write.
+    </p>
+
+    <div class="field">
+      <label>OpenAI API key *</label>
+      <input type="password" id="apiKey" placeholder="sk-proj-..." />
+      <div class="hint">Stored locally in your browser only. Get one at <a href="https://platform.openai.com/api-keys" target="_blank">platform.openai.com</a>.</div>
+    </div>
+
+    <div class="field">
+      <label>Name / handle *</label>
+      <input type="text" id="handle" placeholder="@yourhandle" />
+    </div>
+
+    <div class="field">
+      <label>About you *</label>
+      <textarea id="aboutYou" rows="3" placeholder="Who you are, what you do, your general vibe..."></textarea>
+    </div>
+
+    <div class="field">
+      <label>Intentions</label>
+      <textarea id="intentions" rows="2" placeholder="What do you want your replies to accomplish?"></textarea>
+    </div>
+
+    <div class="field">
+      <label>Interests</label>
+      <textarea id="interests" rows="2" placeholder="Topics you engage with"></textarea>
+    </div>
+
+    <div class="field">
+      <label>Mention when relevant</label>
+      <textarea id="mentionWhenRelevant" rows="2" placeholder="Things to bring up when it fits, e.g. your product, your site..."></textarea>
+    </div>
+
+    <div class="field">
+      <label>Never mention</label>
+      <textarea id="neverMention" rows="2" placeholder="Topics or things to always avoid"></textarea>
+    </div>
+
+    <div class="field">
+      <label>Reply tone</label>
+      <div class="chip-row" id="tone-chips">
+        <button type="button" data-value="Friendly">Friendly</button>
+        <button type="button" data-value="Professional">Professional</button>
+        <button type="button" data-value="Witty">Witty</button>
+        <button type="button" data-value="Supportive">Supportive</button>
+        <button type="button" data-value="Concise">Concise</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Reply length</label>
+      <div class="chip-row" id="length-chips">
+        <button type="button" data-value="Short">Short</button>
+        <button type="button" data-value="Medium">Medium</button>
+        <button type="button" data-value="Long">Long</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Learned voice samples (auto-collected)</label>
+      <textarea id="voiceSamplesText" rows="4" readonly placeholder="No samples yet. Reply to posts on X directly to teach ReplyGenie your voice!"></textarea>
+      <div class="hint">Auto-collected when you post replies on X. Max 15 kept.</div>
+      <button type="button" id="clearVoice" class="secondary-btn danger-link">Clear learned voice</button>
+    </div>
+
+    <hr class="divider" />
+
+    <h2>Template Short-Circuit Database</h2>
+    <p class="note">
+      Manage instant automated reply templates. When a tweet matches a known intent (congratulations, agreement, questions), ReplyGenie offers instant high-quality templates to save OpenAI API credits.
+    </p>
+
+    <!-- Template Database Manager -->
+    <div class="tpl-db-section">
+      <div class="field-inline">
+        <label>Select Category</label>
+        <select id="tplCategorySelect" class="styled-select">
+          <option value="congratulations">🎉 Congratulations</option>
+          <option value="agreement">🤝 Agreement & Support</option>
+          <option value="thanks">🙏 Thanks & Appreciation</option>
+          <option value="question_interest">🤔 Curious / Intrigued</option>
+          <option value="value_add">💡 Value Add / Perspective</option>
+          <option value="custom">⚡ General Custom Templates</option>
+        </select>
+      </div>
+
+      <div class="tpl-list-container" id="tplListContainer">
+        <!-- Dynamically rendered list of active templates for selected category -->
+      </div>
+
+      <div class="add-tpl-row">
+        <input type="text" id="newTplInput" placeholder="Enter a new template phrase..." />
+        <button type="button" id="addTplBtn" class="pill-btn primary-sub">Add Template</button>
+      </div>
+
+      <div class="tpl-actions">
+        <button type="button" id="resetTplBtn" class="secondary-btn danger-link">Reset to Default Templates</button>
+      </div>
+    </div>
+
+    <button id="save" class="save-btn">Save Profile & Settings</button>
+    <div id="savedMsg" class="saved-msg"></div>
+  </div>
+  <script src="options.js"></script>
+</body>
+</html>
