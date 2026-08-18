@@ -6,24 +6,42 @@
   <title>ReplyGenie — AI Replies for X (Twitter) in Your Voice</title>
   <meta name="description" content="Draft thoughtful, high-converting X/Twitter replies in 1-click using AI trained on your own voice. Bring your own OpenAI API key." />
   
-  <!-- Fonts -->
+  <!-- Modern Developer Fonts (Inter / Geist inspired & JetBrains Mono) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 
   <style>
+    /* ==========================================================================
+       VERCEL-INSPIRED DESIGN SYSTEM (DESIGN.md Reference)
+       Palette: Monochromatic Ink (#171717 / #000), Stark White (#fff),
+       Hairline borders (#222 / rgba(255,255,255,0.08)), Mesh Accents (Cyan/Violet/Blue)
+       ========================================================================== */
     :root {
-      --bg: #090a0f;
-      --bg-card: rgba(255, 255, 255, 0.03);
-      --border: rgba(255, 255, 255, 0.08);
-      --border-hover: rgba(255, 255, 255, 0.2);
-      --accent: #6366f1;
-      --accent-glow: rgba(99, 102, 241, 0.35);
-      --text: #f3f4f6;
-      --text-muted: #9ca3af;
-      --text-dim: #6b7280;
-      --x-blue: #1d9bf0;
-      --gradient-text: linear-gradient(135deg, #ffffff 0%, #a5b4fc 50%, #6366f1 100%);
+      --bg-dark: #050505;
+      --bg-canvas: #0a0a0c;
+      --bg-card: rgba(255, 255, 255, 0.025);
+      --bg-card-hover: rgba(255, 255, 255, 0.045);
+      --border-hairline: rgba(255, 255, 255, 0.08);
+      --border-strong: rgba(255, 255, 255, 0.16);
+      --border-focus: #0070f3;
+      
+      --text-main: #ededed;
+      --text-muted: #a1a1a1;
+      --text-dim: #666666;
+      
+      --accent-blue: #0070f3;
+      --accent-cyan: #50e3c2;
+      --accent-violet: #7928ca;
+      --accent-magenta: #eb367f;
+      --accent-amber: #f5a623;
+      
+      --gradient-brand: linear-gradient(135deg, #ffffff 0%, #d4d4d4 40%, #0070f3 100%);
+      --gradient-mesh: radial-gradient(circle at 50% -100px, rgba(0, 112, 243, 0.18), transparent 70%);
+      --gradient-border: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.02) 100%);
+      
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
     }
 
     * {
@@ -32,27 +50,33 @@
       padding: 0;
     }
 
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
-      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-      background-color: var(--bg);
-      color: var(--text);
+      font-family: var(--font-sans);
+      background-color: var(--bg-dark);
+      color: var(--text-main);
       line-height: 1.6;
       overflow-x: hidden;
       -webkit-font-smoothing: antialiased;
+      background-image: 
+        radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+      background-size: 32px 32px;
     }
 
-    /* Background glow effect */
-    .bg-glow {
+    /* Ambient top glow mesh */
+    .bg-mesh {
       position: absolute;
-      top: -200px;
+      top: 0;
       left: 50%;
       transform: translateX(-50%);
-      width: 1000px;
-      height: 600px;
-      background: radial-gradient(circle, var(--accent-glow) 0%, rgba(99,102,241,0) 70%);
-      filter: blur(80px);
-      z-index: 0;
+      width: 100vw;
+      height: 700px;
+      background: var(--gradient-mesh);
       pointer-events: none;
+      z-index: 0;
     }
 
     .container {
@@ -63,29 +87,50 @@
       z-index: 1;
     }
 
-    /* Header Navigation */
+    /* Sticky Navigation */
     header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      background: rgba(5, 5, 5, 0.75);
+      border-bottom: 1px solid var(--border-hairline);
+      padding: 16px 0;
+    }
+
+    .header-inner {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 32px 0;
     }
 
     .logo {
       display: flex;
       align-items: center;
       gap: 12px;
-      font-family: 'Syne', sans-serif;
-      font-size: 1.35rem;
-      font-weight: 800;
+      font-weight: 700;
+      font-size: 1.1rem;
       color: #fff;
       text-decoration: none;
+      letter-spacing: -0.02em;
     }
 
     .logo img {
-      width: 36px;
-      height: 36px;
+      width: 32px;
+      height: 32px;
       border-radius: 8px;
+      border: 1px solid var(--border-hairline);
+    }
+
+    .logo-badge {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      border-radius: 99px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-hairline);
+      color: var(--text-muted);
     }
 
     nav {
@@ -98,90 +143,101 @@
       color: var(--text-muted);
       text-decoration: none;
       font-weight: 500;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       transition: color 0.2s ease;
     }
 
     nav a:hover {
-      color: var(--text);
+      color: #fff;
     }
 
-    .btn-secondary {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      color: var(--text);
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
       padding: 10px 20px;
-      border-radius: 99px;
-      text-decoration: none;
+      border-radius: 8px;
       font-weight: 600;
       font-size: 0.9rem;
-      transition: all 0.2s ease;
-    }
-
-    .btn-secondary:hover {
-      border-color: var(--border-hover);
-      background: rgba(255, 255, 255, 0.06);
+      text-decoration: none;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      cursor: pointer;
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-      color: #fff;
-      padding: 14px 28px;
-      border-radius: 99px;
-      text-decoration: none;
-      font-weight: 700;
-      font-size: 1rem;
-      box-shadow: 0 10px 25px -5px var(--accent-glow);
-      transition: all 0.25s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
+      background: #ffffff;
+      color: #000000;
+      border: 1px solid #ffffff;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
     }
 
     .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 15px 30px -5px rgba(99, 102, 241, 0.5);
+      background: #ededed;
+      transform: translateY(-1px);
+      box-shadow: 0 0 25px rgba(255, 255, 255, 0.25);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.04);
+      color: #ededed;
+      border: 1px solid var(--border-hairline);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: var(--border-strong);
+      color: #ffffff;
     }
 
     /* Hero Section */
     .hero {
       text-align: center;
-      padding: 80px 0 60px;
-      max-width: 840px;
+      padding: 90px 0 60px;
+      max-width: 860px;
       margin: 0 auto;
     }
 
-    .badge {
+    .badge-pill {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      background: rgba(99, 102, 241, 0.1);
-      border: 1px solid rgba(99, 102, 241, 0.3);
-      color: #a5b4fc;
-      padding: 6px 16px;
+      padding: 6px 14px;
       border-radius: 99px;
-      font-size: 0.85rem;
-      font-weight: 600;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-hairline);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--text-muted);
       margin-bottom: 28px;
     }
 
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-cyan);
+      box-shadow: 0 0 10px var(--accent-cyan);
+    }
+
     h1 {
-      font-family: 'Syne', sans-serif;
-      font-size: 3.8rem;
+      font-size: 3.6rem;
       font-weight: 800;
-      line-height: 1.1;
-      letter-spacing: -0.02em;
+      line-height: 1.08;
+      letter-spacing: -0.035em;
       margin-bottom: 24px;
-      background: var(--gradient-text);
+      background: var(--gradient-brand);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
     .hero p {
-      font-size: 1.25rem;
+      font-size: 1.2rem;
       color: var(--text-muted);
-      max-width: 640px;
+      max-width: 660px;
       margin: 0 auto 36px;
+      font-weight: 400;
     }
 
     .hero-actions {
@@ -189,40 +245,77 @@
       align-items: center;
       justify-content: center;
       gap: 16px;
-      margin-bottom: 48px;
+      margin-bottom: 40px;
     }
 
-    .hero-note {
-      font-size: 0.88rem;
-      color: var(--text-dim);
+    .hero-features-strip {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 16px;
+      gap: 24px;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      flex-wrap: wrap;
     }
 
-    /* Demo Preview Mockup */
-    .preview-window {
-      background: #11131a;
-      border: 1px solid var(--border);
-      border-radius: 16px;
+    .hero-features-strip span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Live Interactive Demo Window */
+    .demo-window {
+      background: var(--bg-canvas);
+      border: 1px solid var(--border-hairline);
+      border-radius: 14px;
       padding: 24px;
-      max-width: 680px;
-      margin: 40px auto 0;
+      max-width: 720px;
+      margin: 50px auto 0;
       text-align: left;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+      box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.8), 0 0 1px 1px rgba(255, 255, 255, 0.05);
       position: relative;
     }
 
-    .tweet-mock {
-      background: #161922;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      border-radius: 12px;
+    .window-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 16px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border-hairline);
+    }
+
+    .window-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .window-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .window-title {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .tweet-card {
+      background: rgba(255, 255, 255, 0.015);
+      border: 1px solid var(--border-hairline);
+      border-radius: 10px;
       padding: 20px;
       margin-bottom: 16px;
     }
 
-    .tweet-header {
+    .tweet-author {
       display: flex;
       align-items: center;
       gap: 12px;
@@ -230,399 +323,699 @@
     }
 
     .avatar {
-      width: 42px;
-      height: 42px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
-      background: #374151;
-    }
-
-    .user-info {
-      line-height: 1.3;
-    }
-
-    .user-name {
+      background: linear-gradient(135deg, #262626 0%, #171717 100%);
+      border: 1px solid var(--border-hairline);
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-weight: 700;
+      font-size: 0.9rem;
       color: #fff;
     }
 
-    .user-handle {
+    .author-meta {
+      line-height: 1.3;
+    }
+
+    .author-name {
+      font-weight: 600;
+      color: #fff;
+      font-size: 0.95rem;
+    }
+
+    .author-handle {
       color: var(--text-dim);
-      font-size: 0.88rem;
+      font-size: 0.85rem;
+      font-family: var(--font-mono);
     }
 
-    .tweet-body {
-      font-size: 1.05rem;
-      color: #e5e7eb;
+    .tweet-content {
+      font-size: 0.98rem;
+      color: #e5e5e5;
       margin-bottom: 16px;
+      line-height: 1.5;
     }
 
-    .action-bar {
+    .tweet-bar {
       display: flex;
       align-items: center;
-      gap: 24px;
+      justify-content: space-between;
       color: var(--text-dim);
-      font-size: 0.88rem;
+      font-size: 0.85rem;
       padding-top: 12px;
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      border-top: 1px solid var(--border-hairline);
     }
 
-    .reply-btn-mock {
-      background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(79, 70, 229, 0.3));
-      border: 1px solid rgba(99, 102, 241, 0.4);
-      color: #a5b4fc;
-      padding: 6px 14px;
+    .tweet-stats {
+      display: flex;
+      gap: 20px;
+    }
+
+    .demo-reply-trigger {
+      background: rgba(0, 112, 243, 0.12);
+      border: 1px solid rgba(0, 112, 243, 0.4);
+      color: #388bfd;
+      padding: 5px 12px;
       border-radius: 99px;
-      font-size: 0.85rem;
-      font-weight: 700;
+      font-size: 0.82rem;
+      font-weight: 600;
       display: inline-flex;
       align-items: center;
       gap: 6px;
       cursor: pointer;
+      transition: all 0.2s ease;
     }
 
-    .card-mock {
-      background: #1e2230;
-      border: 1px solid rgba(99, 102, 241, 0.3);
+    .demo-reply-trigger:hover {
+      background: rgba(0, 112, 243, 0.25);
+      border-color: #0070f3;
+      color: #ffffff;
+    }
+
+    /* Injected ReplyGenie Suggestion Card Mockup */
+    .suggestion-card-mock {
+      background: #0f1117;
+      border: 1px solid rgba(0, 112, 243, 0.35);
       border-radius: 12px;
-      padding: 16px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+      padding: 18px;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+      position: relative;
     }
 
-    .card-mock-header {
+    .card-meta {
       display: flex;
+      align-items: center;
       justify-content: space-between;
-      color: #a5b4fc;
-      font-size: 0.8rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 10px;
-    }
-
-    .card-mock-text {
-      background: #141722;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 8px;
-      padding: 12px;
-      font-size: 0.95rem;
-      color: #f3f4f6;
       margin-bottom: 12px;
     }
 
-    .card-mock-actions {
+    .card-tag {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: #388bfd;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 600;
+    }
+
+    .card-status {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--accent-cyan);
       display: flex;
-      justify-content: flex-end;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .tone-selector-mini {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .tone-pill {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-hairline);
+      color: var(--text-muted);
+      padding: 4px 10px;
+      border-radius: 99px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .tone-pill.active {
+      background: rgba(0, 112, 243, 0.2);
+      border-color: #0070f3;
+      color: #fff;
+    }
+
+    .generated-text-box {
+      background: #050608;
+      border: 1px solid var(--border-hairline);
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 0.92rem;
+      color: #ededed;
+      min-height: 72px;
+      line-height: 1.5;
+      margin-bottom: 14px;
+    }
+
+    .card-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .copy-toast {
+      font-size: 0.78rem;
+      color: var(--accent-cyan);
+      font-family: var(--font-mono);
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .copy-toast.show {
+      opacity: 1;
+    }
+
+    .action-btns {
+      display: flex;
       gap: 8px;
     }
 
-    .sm-btn {
-      padding: 6px 12px;
+    .btn-sm {
+      padding: 6px 14px;
       border-radius: 6px;
       font-size: 0.8rem;
       font-weight: 600;
-      border: none;
       cursor: pointer;
+      border: none;
+      transition: all 0.15s ease;
     }
 
-    .sm-btn-primary {
-      background: var(--accent);
+    .btn-sm-ghost {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-muted);
+    }
+
+    .btn-sm-ghost:hover {
+      background: rgba(255, 255, 255, 0.12);
       color: #fff;
     }
 
-    .sm-btn-secondary {
-      background: rgba(255, 255, 255, 0.08);
-      color: var(--text-muted);
+    .btn-sm-primary {
+      background: #0070f3;
+      color: #fff;
     }
 
-    /* Features Section */
+    .btn-sm-primary:hover {
+      background: #0060df;
+    }
+
+    /* Section Typography */
+    .section {
+      padding: 100px 0;
+      border-top: 1px solid var(--border-hairline);
+    }
+
+    .section-header {
+      text-align: center;
+      max-width: 640px;
+      margin: 0 auto 60px;
+    }
+
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--accent-blue);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 12px;
+    }
+
     .section-title {
-      text-align: center;
-      font-family: 'Syne', sans-serif;
       font-size: 2.2rem;
-      font-weight: 800;
-      margin: 120px 0 16px;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      color: #ffffff;
+      margin-bottom: 16px;
     }
 
-    .section-subtitle {
-      text-align: center;
+    .section-desc {
       color: var(--text-muted);
-      font-size: 1.1rem;
-      margin-bottom: 60px;
+      font-size: 1.05rem;
     }
 
-    .features-grid {
+    /* Bento Grid */
+    .bento-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 24px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
     }
 
-    .feature-card {
+    .bento-card {
       background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 32px;
-      transition: all 0.25s ease;
-    }
-
-    .feature-card:hover {
-      border-color: var(--border-hover);
-      transform: translateY(-4px);
-    }
-
-    .feature-icon {
-      width: 48px;
-      height: 48px;
+      border: 1px solid var(--border-hairline);
       border-radius: 12px;
-      background: rgba(99, 102, 241, 0.15);
-      color: #a5b4fc;
+      padding: 28px;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .bento-card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-strong);
+      transform: translateY(-2px);
+    }
+
+    .bento-card.span-2 {
+      grid-column: span 2;
+    }
+
+    .bento-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-hairline);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.4rem;
+      font-size: 1.2rem;
       margin-bottom: 20px;
-    }
-
-    .feature-card h3 {
-      font-size: 1.25rem;
-      font-weight: 700;
-      margin-bottom: 12px;
       color: #fff;
     }
 
-    .feature-card p {
+    .bento-card h3 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 10px;
+      letter-spacing: -0.01em;
+    }
+
+    .bento-card p {
       color: var(--text-muted);
-      font-size: 0.95rem;
+      font-size: 0.92rem;
+      line-height: 1.6;
     }
 
-    /* Installation Steps */
-    .steps-container {
+    .bento-tag {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      margin-top: 16px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    /* Workflow / Steps */
+    .steps-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 24px;
-      margin-top: 40px;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
     }
 
-    .step-card {
+    .step-box {
       background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 28px;
+      border: 1px solid var(--border-hairline);
+      border-radius: 12px;
+      padding: 24px;
       position: relative;
     }
 
     .step-num {
-      font-family: 'Syne', sans-serif;
-      font-size: 2.5rem;
-      font-weight: 800;
-      color: rgba(99, 102, 241, 0.3);
-      margin-bottom: 12px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--accent-blue);
+      margin-bottom: 16px;
     }
 
-    .step-card h4 {
-      font-size: 1.1rem;
-      font-weight: 700;
+    .step-box h4 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #fff;
       margin-bottom: 8px;
     }
 
-    .step-card p {
+    .step-box p {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+
+    .code-snippet {
+      background: #000000;
+      border: 1px solid var(--border-hairline);
+      border-radius: 8px;
+      padding: 12px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--accent-cyan);
+      margin-top: 12px;
+      overflow-x: auto;
+    }
+
+    /* FAQ Accordion */
+    .faq-list {
+      max-width: 760px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .faq-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border-hairline);
+      border-radius: 10px;
+      padding: 20px 24px;
+    }
+
+    .faq-item h4 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+
+    .faq-item p {
       font-size: 0.9rem;
       color: var(--text-muted);
     }
 
     /* Footer */
     footer {
-      border-top: 1px solid var(--border);
-      margin-top: 120px;
+      border-top: 1px solid var(--border-hairline);
       padding: 60px 0;
       text-align: center;
+      font-size: 0.88rem;
       color: var(--text-dim);
-      font-size: 0.9rem;
     }
 
     footer a {
       color: var(--text-muted);
       text-decoration: none;
+      transition: color 0.2s ease;
     }
 
     footer a:hover {
       color: #fff;
     }
 
-    @media (max-width: 768px) {
-      h1 {
-        font-size: 2.6rem;
-      }
-      .hero p {
-        font-size: 1.05rem;
-      }
-      nav {
-        display: none;
-      }
+    .footer-nav {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      margin-bottom: 24px;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 900px) {
+      .bento-grid { grid-template-columns: 1fr; }
+      .bento-card.span-2 { grid-column: span 1; }
+      .steps-grid { grid-template-columns: repeat(2, 1fr); }
+      h1 { font-size: 2.6rem; }
+    }
+
+    @media (max-width: 600px) {
+      .steps-grid { grid-template-columns: 1fr; }
+      nav { display: none; }
     }
   </style>
 </head>
 <body>
 
-  <div class="bg-glow"></div>
+  <div class="bg-mesh"></div>
 
   <div class="container">
     <!-- Header -->
     <header>
-      <a href="#" class="logo">
-        <img src="icons/icon48.png" alt="ReplyGenie Logo" />
-        ReplyGenie
-      </a>
-      <nav>
-        <a href="#features">Features</a>
-        <a href="#how-it-works">How it Works</a>
-        <a href="https://github.com/nishantnischal10467-cell/replygenie-extension" target="_blank">GitHub</a>
-        <a href="https://github.com/nishantnischal10467-cell/replygenie-extension#install-unpacked-for-testingpersonal-use" class="btn-secondary">Install Extension</a>
-      </nav>
+      <div class="header-inner">
+        <a href="#" class="logo">
+          <img src="icons/icon48.png" alt="ReplyGenie Icon" />
+          ReplyGenie
+          <span class="logo-badge">v1.0 MV3</span>
+        </a>
+        <nav>
+          <a href="#features">Features</a>
+          <a href="#how-it-works">How it Works</a>
+          <a href="#privacy">Privacy</a>
+          <a href="https://github.com/nishantnischal10467-cell/replygenie-extension" target="_blank">GitHub</a>
+          <a href="https://github.com/nishantnischal10467-cell/replygenie-extension#install-unpacked-for-testingpersonal-use" class="btn btn-primary">Install Extension</a>
+        </nav>
+      </div>
     </header>
 
     <!-- Hero -->
     <section class="hero">
-      <div class="badge">✨ Manifest V3 Chrome Extension</div>
-      <h1>Draft X Replies in Your Voice with AI</h1>
+      <div class="badge-pill">
+        <span class="badge-dot"></span>
+        <span>✨ Manifest V3 Chrome Extension • BYO API Key</span>
+      </div>
+      
+      <h1>AI replies on X, drafted in your authentic voice.</h1>
+      
       <p>
-        Stop staring at blank reply boxes. ReplyGenie reads tweet context, learns your writing voice, and generates punchy, human replies auto-copied to your clipboard.
+        Stop staring at empty reply boxes. ReplyGenie analyzes tweet context, learns your writing voice from past posts, and drafts sharp, high-converting replies in 1 click.
       </p>
+
       <div class="hero-actions">
-        <a href="https://github.com/nishantnischal10467-cell/replygenie-extension" class="btn-primary" target="_blank">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+        <a href="https://github.com/nishantnischal10467-cell/replygenie-extension" class="btn btn-primary" target="_blank">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
           Get on GitHub
         </a>
-        <a href="#how-it-works" class="btn-secondary">How to Install</a>
-      </div>
-      <div class="hero-note">
-        <span>🔒 Bring Your Own API Key</span> • 
-        <span>⚡ Zero Server Dependency</span> • 
-        <span>🧠 Local Voice Learning</span>
+        <a href="#how-it-works" class="btn btn-secondary">Setup Guide</a>
       </div>
 
-      <!-- Preview Mockup -->
-      <div class="preview-window">
-        <div class="tweet-mock">
-          <div class="tweet-header">
-            <div class="avatar"></div>
-            <div class="user-info">
-              <div class="user-name">Naval</div>
-              <div class="user-handle">@naval</div>
+      <div class="hero-features-strip">
+        <span>🔒 BYO OpenAI API Key</span>
+        <span>⚡ Zero Server Tracking</span>
+        <span>🧠 Local Voice Memory</span>
+      </div>
+
+      <!-- Live Interactive Demo Window -->
+      <div class="demo-window">
+        <div class="window-header">
+          <div class="window-dots">
+            <div class="window-dot"></div>
+            <div class="window-dot"></div>
+            <div class="window-dot"></div>
+          </div>
+          <div class="window-title">Interactive Live Demo — x.com Feed</div>
+        </div>
+
+        <div class="tweet-card">
+          <div class="tweet-author">
+            <div class="avatar">N</div>
+            <div class="author-meta">
+              <div class="author-name">Naval Ravikant</div>
+              <div class="author-handle">@naval</div>
             </div>
           </div>
-          <div class="tweet-body">
-            If you can't code, write books and blogs, record podcasts and videos. Leverage is earned through output.
+          <div class="tweet-content">
+            If you can't code, write books and blogs, record podcasts and videos. Leverage is earned through high-value output.
           </div>
-          <div class="action-bar">
-            <span>💬 412</span>
-            <span>🔁 1.8K</span>
-            <span>❤️ 12.4K</span>
-            <div class="reply-btn-mock">✨ Reply</div>
+          <div class="tweet-bar">
+            <div class="tweet-stats">
+              <span>💬 412</span>
+              <span>🔁 1.8K</span>
+              <span>❤️ 12.4K</span>
+            </div>
+            <button class="demo-reply-trigger" id="demo-trigger-btn">
+              <span>✨ Reply</span>
+            </button>
           </div>
         </div>
 
-        <div class="card-mock">
-          <div class="card-mock-header">
-            <span>Copied to Clipboard ✓</span>
-            <span>✨ ReplyGenie</span>
+        <!-- Injected Card Simulation -->
+        <div class="suggestion-card-mock">
+          <div class="card-meta">
+            <span class="card-tag">ReplyGenie Draft</span>
+            <span class="card-status" id="demo-status">● Ready</span>
           </div>
-          <div class="card-mock-text">
-            Specific knowledge compounds even faster when you combine media with code — the real edge is building both in public.
+
+          <div class="tone-selector-mini">
+            <button class="tone-pill active" onclick="setDemoTone(this, 'witty')">Witty</button>
+            <button class="tone-pill" onclick="setDemoTone(this, 'insightful')">Insightful</button>
+            <button class="tone-pill" onclick="setDemoTone(this, 'concise')">Concise</button>
           </div>
-          <div class="card-mock-actions">
-            <button class="sm-btn sm-btn-secondary">Regenerate</button>
-            <button class="sm-btn sm-btn-primary">Copied!</button>
+
+          <div class="generated-text-box" id="demo-reply-text">
+            Specific knowledge compounds even faster when media meets code — the real edge is shipping both in public.
+          </div>
+
+          <div class="card-actions">
+            <span class="copy-toast" id="copy-toast">✓ Copied to clipboard</span>
+            <div class="action-btns">
+              <button class="btn-sm btn-sm-ghost" onclick="regenDemoReply()">Regenerate</button>
+              <button class="btn-sm btn-sm-primary" onclick="copyDemoReply()">Copy Reply</button>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Features -->
-    <section id="features">
-      <h2 class="section-title">Engineered for Smart Engagement</h2>
-      <p class="section-subtitle">No generic AI fluff. Every reply is structured to sound authentic and add real value.</p>
+    <!-- Bento Grid Features -->
+    <section class="section" id="features">
+      <div class="section-header">
+        <div class="section-label">Engineered Features</div>
+        <h2 class="section-title">Built for meaningful engagement.</h2>
+        <p class="section-desc">No generic AI fluff. Every reply uses structured angles and learns your personal voice.</p>
+      </div>
 
-      <div class="features-grid">
-        <div class="feature-card">
-          <div class="feature-icon">🎯</div>
-          <h3>25 Structural Angles</h3>
-          <p>Rotates through 25 distinct reply structures — sharp questions, reframes, data points, or practical observations — so your replies never feel formulaic.</p>
+      <div class="bento-grid">
+        <div class="bento-card span-2">
+          <div class="bento-icon">🎯</div>
+          <h3>25 Structural Angles & Anti-Fluff Engine</h3>
+          <p>Rotates through 25 proven conversation angles — sharp questions, reframes, data insights, and counter-perspectives — ensuring your replies never sound robotic or repetitive.</p>
+          <span class="bento-tag">PROMPT_ENGINEERING_V2</span>
         </div>
 
-        <div class="feature-card">
-          <div class="feature-icon">🧠</div>
+        <div class="bento-card">
+          <div class="bento-icon">🧠</div>
           <h3>Local Voice Learning</h3>
-          <p>Quietly learns from your actual manual replies on X to match your vocabulary, sentence length, and unique style over time.</p>
+          <p>Quietly samples your manual replies on X to adopt your specific vocabulary, sentence structure, and style without sending data to third-party servers.</p>
+          <span class="bento-tag">CHROME_STORAGE_LOCAL</span>
         </div>
 
-        <div class="feature-card">
-          <div class="feature-icon">⚡</div>
-          <h3>Instant Template Short-Circuit</h3>
-          <p>Detects common intents (congratulations, thanks, connections) and instantly suggests templates without burning OpenAI API tokens.</p>
+        <div class="bento-card">
+          <div class="bento-icon">⚡</div>
+          <h3>Template Short-Circuit</h3>
+          <p>Instantly suggests quick templates for common interactions (thanks, congrats, agreement) without wasting OpenAI API tokens.</p>
+          <span class="bento-tag">ZERO_TOKEN_LATENCY</span>
         </div>
 
-        <div class="feature-card">
-          <div class="feature-icon">🔒</div>
-          <h3>Privacy & BYO Key</h3>
-          <p>Your OpenAI API key is saved exclusively in Chrome local storage. API requests go directly from your browser worker to OpenAI.</p>
-        </div>
-
-        <div class="feature-card">
-          <div class="feature-icon">📋</div>
-          <h3>1-Click Auto Copy</h3>
-          <p>Click ✨ Reply, get a generated reply, and it's placed right on your clipboard ready to paste into X's reply box immediately.</p>
-        </div>
-
-        <div class="feature-card">
-          <div class="feature-icon">🎛️</div>
-          <h3>Custom Tone & Length</h3>
-          <p>Fine-tune replies by tone (Witty, Professional, Friendly, Supportive) and strict length bounds (Short punchy, Medium, Long detailed).</p>
+        <div class="bento-card span-2">
+          <div class="bento-icon">🔒</div>
+          <h3>Client-Side Privacy & BYO Key</h3>
+          <p>Your OpenAI API key remains exclusively inside your browser's local sync storage. All completions fire directly to OpenAI's official endpoint with zero middleman server logging.</p>
+          <span class="bento-tag">DIRECT_HTTPS_OPENAI</span>
         </div>
       </div>
     </section>
 
-    <!-- How it works -->
-    <section id="how-it-works">
-      <h2 class="section-title">Get Started in 2 Minutes</h2>
-      <p class="section-subtitle">Load unpacking instructions for testing or personal setup.</p>
+    <!-- Setup Guide -->
+    <section class="section" id="how-it-works">
+      <div class="section-header">
+        <div class="section-label">Installation</div>
+        <h2 class="section-title">Up and running in 2 minutes.</h2>
+        <p class="section-desc">Load unpacked directly in Chrome for personal or developer use.</p>
+      </div>
 
-      <div class="steps-container">
-        <div class="step-card">
-          <div class="step-num">01</div>
-          <h4>Download / Clone</h4>
-          <p>Clone the repository from GitHub to a permanent folder on your computer.</p>
+      <div class="steps-grid">
+        <div class="step-box">
+          <div class="step-num">STEP 01</div>
+          <h4>Clone Repository</h4>
+          <p>Download or git clone the repo locally to your machine.</p>
+          <div class="code-snippet">git clone https://github.com/...</div>
         </div>
 
-        <div class="step-card">
-          <div class="step-num">02</div>
+        <div class="step-box">
+          <div class="step-num">STEP 02</div>
           <h4>Load Unpacked</h4>
-          <p>Go to <code>chrome://extensions</code>, turn on Developer Mode, and select <strong>Load unpacked</strong>.</p>
+          <p>Open <code>chrome://extensions</code>, toggle Developer Mode, click <strong>Load unpacked</strong>.</p>
         </div>
 
-        <div class="step-card">
-          <div class="step-num">03</div>
+        <div class="step-box">
+          <div class="step-num">STEP 03</div>
           <h4>Add API Key</h4>
-          <p>Click ReplyGenie Options and paste your OpenAI API Key (starts with <code>sk-proj-</code>).</p>
+          <p>Open ReplyGenie Options and paste your OpenAI key (starts with <code>sk-proj-</code>).</p>
         </div>
 
-        <div class="step-card">
-          <div class="step-num">04</div>
+        <div class="step-box">
+          <div class="step-num">STEP 04</div>
           <h4>Start Replying</h4>
-          <p>Open x.com, click ✨ Reply on any tweet, and paste the generated response.</p>
+          <p>Visit x.com, click ✨ Reply on any post, and paste the auto-copied reply.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section" id="privacy">
+      <div class="section-header">
+        <div class="section-label">Security & FAQ</div>
+        <h2 class="section-title">Frequently Asked Questions</h2>
+      </div>
+
+      <div class="faq-list">
+        <div class="faq-item">
+          <h4>Does ReplyGenie store my API key on any server?</h4>
+          <p>No. ReplyGenie has zero backend servers. Your key is stored locally in <code>chrome.storage.sync</code> and requests are dispatched straight from your browser to <code>api.openai.com</code>.</p>
+        </div>
+        <div class="faq-item">
+          <h4>How does the Voice Learning feature work?</h4>
+          <p>When you post a native reply on X, ReplyGenie listens to the submit event and appends a small sample of your written text to your local profile storage (up to 15 samples) to fine-tune future prompt context.</p>
+        </div>
+        <div class="faq-item">
+          <h4>Is ReplyGenie free and open-source?</h4>
+          <p>Yes. ReplyGenie is 100% open-source under the MIT License. You only pay OpenAI directly for your token usage (fractions of a cent per reply using gpt-4o-mini).</p>
         </div>
       </div>
     </section>
 
     <!-- Footer -->
     <footer>
-      <p>
-        ReplyGenie is an open-source project released under the <a href="https://github.com/nishantnischal10467-cell/replygenie-extension/blob/main/LICENSE" target="_blank">MIT License</a>.
-      </p>
-      <p style="margin-top: 8px; font-size: 0.85rem; color: var(--text-dim);">
-        Not affiliated with X (Twitter) or OpenAI.
-      </p>
+      <div class="footer-nav">
+        <a href="#features">Features</a>
+        <a href="#how-it-works">Setup Guide</a>
+        <a href="#privacy">Privacy</a>
+        <a href="https://github.com/nishantnischal10467-cell/replygenie-extension" target="_blank">GitHub</a>
+      </div>
+      <p>© 2026 ReplyGenie. Open source under the MIT License.</p>
+      <p style="margin-top: 6px; font-family: var(--font-mono); font-size: 0.78rem;">Not affiliated with X (Twitter) or OpenAI.</p>
     </footer>
   </div>
 
+  <script>
+    const demoReplies = {
+      witty: [
+        "Specific knowledge compounds even faster when media meets code — the real edge is shipping both in public.",
+        "Code creates digital leverage, but writing creates human leverage. The real cheat code is combining both.",
+        "Or build both. The modern builder writes code by day and context by night."
+      ],
+      insightful: [
+        "Leverage without distribution is invisible. Output built in public serves as proof of work that compounds infinitely.",
+        "The highest return on effort comes from assets that work for you while you sleep: code, media, and reputation.",
+        "Media scales permissionlessly. Every piece of content is an employee working 24/7."
+      ],
+      concise: [
+        "Code creates leverage. Media creates distribution. Do both.",
+        "Output compounds faster than effort. Build in public.",
+        "Leverage is earned, not given. Ship consistently."
+      ]
+    };
+
+    let currentTone = 'witty';
+    let replyIdx = 0;
+
+    function setDemoTone(btn, tone) {
+      document.querySelectorAll('.tone-pill').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentTone = tone;
+      replyIdx = 0;
+      updateDemoText();
+    }
+
+    function updateDemoText() {
+      const el = document.getElementById('demo-reply-text');
+      el.textContent = demoReplies[currentTone][replyIdx % demoReplies[currentTone].length];
+    }
+
+    function regenDemoReply() {
+      const statusEl = document.getElementById('demo-status');
+      statusEl.textContent = '⚡ Generating...';
+      statusEl.style.color = '#0070f3';
+      
+      setTimeout(() => {
+        replyIdx++;
+        updateDemoText();
+        statusEl.textContent = '● Ready';
+        statusEl.style.color = '#50e3c2';
+      }, 300);
+    }
+
+    function copyDemoReply() {
+      const toast = document.getElementById('copy-toast');
+      const text = document.getElementById('demo-reply-text').textContent;
+      navigator.clipboard.writeText(text).catch(() => {});
+      
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2000);
+    }
+
+    document.getElementById('demo-trigger-btn').addEventListener('click', () => {
+      regenDemoReply();
+    });
+  </script>
 </body>
 </html>

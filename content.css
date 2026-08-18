@@ -1,45 +1,61 @@
+/* Injected Content Script Styles - Vercel Design System (DESIGN.md) */
+
 .rg-suggest-btn {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   margin-left: 8px;
-  padding: 6px 10px;
+  padding: 5px 12px;
   border-radius: 9999px;
-  color: #5B4CFA;
+  background: rgba(0, 112, 243, 0.12);
+  border: 1px solid rgba(0, 112, 243, 0.35);
+  color: #388bfd;
   cursor: pointer;
   font-size: 13px;
   font-weight: 600;
-  transition: background 0.15s ease;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   user-select: none;
 }
 
 .rg-suggest-btn:hover {
-  background: rgba(91, 76, 250, 0.1);
+  background: rgba(0, 112, 243, 0.25);
+  border-color: #0070f3;
+  color: #ffffff;
+  transform: translateY(-1px);
 }
 
 .rg-suggest-btn svg {
-  color: #5B4CFA;
+  color: #388bfd;
+  transition: color 0.15s ease;
+}
+
+.rg-suggest-btn:hover svg {
+  color: #ffffff;
 }
 
 #rg-suggestion-card {
   z-index: 999999;
-  width: 320px;
-  background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-  border: 1px solid #eceef2;
-  padding: 14px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  width: 330px;
+  background: #0a0a0c;
+  border-radius: 12px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7), 0 0 1px 1px rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 16px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #ededed;
 }
 
 .rg-card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
-  color: #0f1419;
-  margin-bottom: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  color: #0070f3;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 12px;
 }
 
 .rg-close {
@@ -48,54 +64,78 @@
   font-size: 18px;
   line-height: 1;
   cursor: pointer;
-  color: #536471;
+  color: #666666;
+  transition: color 0.15s ease;
+}
+
+.rg-close:hover {
+  color: #ffffff;
 }
 
 .rg-textarea {
   width: 100%;
   min-height: 90px;
   resize: vertical;
-  border: 1px solid #e1e4e8;
-  border-radius: 10px;
-  padding: 10px;
-  font-size: 14px;
+  background: #050505;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 13.5px;
   font-family: inherit;
-  color: #0f1419;
+  color: #ededed;
   box-sizing: border-box;
+  outline: none;
+  line-height: 1.5;
+  transition: border-color 0.15s ease;
+}
+
+.rg-textarea:focus {
+  border-color: #0070f3;
 }
 
 .rg-card-footer {
   display: flex;
   justify-content: flex-end;
   gap: 8px;
-  margin-top: 10px;
+  margin-top: 12px;
 }
 
 .rg-card-footer button {
   border: none;
-  border-radius: 9999px;
-  padding: 8px 14px;
-  font-size: 13px;
+  border-radius: 6px;
+  padding: 7px 14px;
+  font-size: 12px;
   font-weight: 600;
   cursor: pointer;
+  transition: all 0.15s ease;
 }
 
 .rg-regen {
-  background: #f0f1f5;
-  color: #0f1419;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #a1a1a1;
+}
+
+.rg-regen:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
 }
 
 .rg-copy {
-  background: #5B4CFA;
-  color: #fff;
+  background: #0070f3;
+  color: #ffffff;
+}
+
+.rg-copy:hover {
+  background: #0060df;
 }
 
 .rg-spinner {
   width: 22px;
   height: 22px;
-  margin: 10px auto;
-  border: 3px solid #eceef2;
-  border-top-color: #5B4CFA;
+  margin: 12px auto;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-top-color: #0070f3;
   border-radius: 50%;
   animation: rg-spin 0.8s linear infinite;
 }
@@ -105,33 +145,35 @@
 }
 
 .rg-error {
-  font-size: 13px;
-  color: #d93025;
+  font-size: 12px;
+  color: #ff4d4d;
+  font-family: 'JetBrains Mono', monospace;
 }
 
-/* ---- Cooldown state ---- */
-
+/* Cooldown state */
 .rg-suggest-btn.rg-cooldown {
-  color: #e07b00;
+  background: rgba(245, 166, 35, 0.1);
+  border-color: rgba(245, 166, 35, 0.4);
+  color: #f5a623;
   cursor: not-allowed;
-  opacity: 0.75;
+  opacity: 0.85;
   animation: rg-cooldown-pulse 1s ease-in-out infinite;
 }
 
 .rg-suggest-btn.rg-cooldown:hover {
-  background: rgba(224, 123, 0, 0.08);
+  background: rgba(245, 166, 35, 0.15);
 }
 
 .rg-suggest-btn.rg-cooldown span {
-  font-variant-numeric: tabular-nums; /* keeps width stable as digits change */
+  font-variant-numeric: tabular-nums;
   letter-spacing: -0.01em;
 }
 
 .rg-suggest-btn.rg-cooldown svg {
-  color: #e07b00;
+  color: #f5a623;
 }
 
 @keyframes rg-cooldown-pulse {
-  0%, 100% { opacity: 0.75; }
-  50%       { opacity: 0.45; }
+  0%, 100% { opacity: 0.85; }
+  50%       { opacity: 0.5; }
 }
