@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8" />
-  <title>ReplyGenie — Profile</title>
+  <title>ReplyGenie — Profile & Settings</title>
   <link rel="stylesheet" href="options.css" />
 </head>
 <body>
@@ -76,9 +76,53 @@
       <button type="button" id="clear-voice" class="secondary-btn">Clear learned voice</button>
     </div>
 
-    <button id="save" class="save-btn">Save profile</button>
+    <!-- Generic Reply Template Database -->
+    <div class="field tpl-db-section">
+      <hr class="divider" />
+      <h2>Generic Reply Database</h2>
+      <p class="note">
+        Customize automated templates for common intents (congratulations, connect requests, thanks, etc.).
+        Use <code>{Name}</code> as a placeholder for the post author's first name.
+      </p>
+
+      <div class="field-inline">
+        <label for="tpl-category">Template Category:</label>
+        <select id="tpl-category" class="styled-select">
+          <option value="congratulations">Congratulations 🎉</option>
+          <option value="connect">Connect Requests 🤝</option>
+          <option value="thanks">Thank You 🙏</option>
+          <option value="builder">Builder & Startup 🚀</option>
+          <option value="insightful">Insightful 💡</option>
+
+          <option value="funny">Funny & Witty 🤖</option>
+          <option value="ai">AI & Tech 🧠</option>
+          <option value="marketing">Marketing & Growth 📈</option>
+          <option value="branding">Personal Branding 🎯</option>
+          <option value="engagement">Engagement 💬</option>
+          <option value="contrarian">Contrarian ⚡</option>
+        </select>
+      </div>
+
+      <div class="tpl-list-container" id="tpl-list">
+        <!-- Dynamic list of generic replies -->
+      </div>
+
+      <div class="add-tpl-row">
+        <input type="text" id="new-tpl-input" placeholder="Add custom variation (e.g. Congrats {Name}! Huge win 🔥)" />
+        <button type="button" id="add-tpl-btn" class="secondary-btn primary-sub">Add</button>
+      </div>
+
+      <div class="tpl-actions">
+        <button type="button" id="reset-category-btn" class="secondary-btn danger-link">Reset Category to Defaults</button>
+      </div>
+    </div>
+
+    <button id="save" class="save-btn">Save profile &amp; templates</button>
     <div id="saved-msg" class="saved-msg"></div>
   </div>
+
+  <script src="templates.js"></script>
+  <script src="storage.js"></script>
   <script src="options.js"></script>
 </body>
 </html>

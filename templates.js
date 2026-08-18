@@ -1,6 +1,6 @@
 // templates.js — Reply template library
 // Loaded by background.js via importScripts()
-// Use {name} as a placeholder for the post author's first name.
+// Use {Name} or {name} as a placeholder for the post author's first name.
 
 /* eslint-disable no-var */
 
@@ -8,51 +8,51 @@ var TEMPLATES = {
 
   // ── Connect request replies ───────────────────────────────────────────────
   connect: [
-    "hey {name}, can we connect?",
-    "would love to connect too {name} if that's ok?",
-    "hey {name}, can we connect as well?",
-    "hey {name}, would it be okay if we connect?",
-    "{name}, can we connect too so we can help each other grow?",
+    "hey {Name}, can we connect?",
+    "would love to connect too {Name} if that's ok?",
+    "hey {Name}, can we connect as well?",
+    "hey {Name}, would it be okay if we connect?",
+    "{Name}, can we connect too so we can help each other grow?",
     "would you mind if we connect as well?",
     "connect?",
-    "I build in public! can we connect {name}?",
-    "I'm an indie hacker — would love to connect if that's ok {name}?",
+    "I build in public! can we connect {Name}?",
+    "I'm an indie hacker — would love to connect if that's ok {Name}?",
     "can we connect as well?",
-    "down to connect {name}?",
-    "always down to connect with fellow builders {name}",
-    "connect {name}?",
-    "connecting now {name}, let's grow together",
-    "hey {name}, happy to connect!",
-    "let's connect and help each other grow {name}",
+    "down to connect {Name}?",
+    "always down to connect with fellow builders {Name}",
+    "connect {Name}?",
+    "connecting now {Name}, let's grow together",
+    "hey {Name}, happy to connect!",
+    "let's connect and help each other grow {Name}",
   ],
 
   // ── Thank you replies ─────────────────────────────────────────────────────
   thanks: [
-    "thanks so much {name} 🙏🏻",
+    "thanks so much {Name} 🙏🏻",
     "appreciate you :D",
-    "thank you {name} 🔥",
+    "thank you {Name} 🔥",
     "this means a lot, thank you 🙏🏻",
-    "you're the best {name} 👊🏻",
+    "you're the best {Name} 👊🏻",
     "thanks a ton :D",
-    "really appreciate this {name} 🔥",
+    "really appreciate this {Name} 🔥",
     "so glad you liked it, thanks 🙏🏻",
-    "you made my day {name} 👊🏻",
+    "you made my day {Name} 👊🏻",
     "thank you, appreciate you 🔥",
-    "means a lot {name} 🙏🏻",
+    "means a lot {Name} 🙏🏻",
     "genuinely appreciate it, thank you",
   ],
 
   // ── Congratulations replies ───────────────────────────────────────────────
   congratulations: [
-    "congrats {name}! that's a huge milestone.",
+    "congrats {Name}! that's a huge milestone.",
     "that's a huge milestone.",
-    "keep growing {name}!",
-    "well deserved {name} 🔥",
-    "this is just the beginning {name}",
-    "huge congrats — what's next?",
-    "love to see it {name} 👊🏻",
-    "congrats! how long did it take to get here?",
-    "incredible {name} — keep shipping!",
+    "keep growing {Name}!",
+    "well deserved {Name} 🔥",
+    "this is just the beginning {Name}",
+    "huge congrats {Name}! excited to see what comes next",
+    "love to see it {Name} 👊🏻",
+    "congrats! incredible work getting to this point",
+    "incredible {Name} — huge achievement!",
     "that's the kind of win worth celebrating 🎉",
   ],
 
@@ -130,10 +130,10 @@ var TEMPLATES = {
 
   // ── Engagement / discussion replies ──────────────────────────────────────
   engagement: [
-    "what's the one thing you wish you'd known before starting this?",
+    "what's the single biggest bottleneck you ran into while building this?",
     "how long did it take before it started clicking?",
     "genuinely curious — what made you decide to go this route?",
-    "what would you do differently if you were starting over?",
+    "what's the main metric you're tracking to know if this strategy works?",
     "the timing of this is interesting — what pushed you to share this now?",
     "drop the link, I want to dig into this more.",
   ],
@@ -181,3 +181,31 @@ var BROAD_CATEGORY_PATTERNS = [
   { category: "branding",  test: (t) => /\b(personal brand|content creator|following|followers|niche|consistency|posting)\b/.test(t) },
   { category: "contrarian",test: (t) => /\b(unpopular opinion|hot take|controversial|disagree|actually|everyone says)\b/.test(t) },
 ];
+
+/**
+ * Fills {Name} or {name} placeholder in a template string.
+ */
+function fillTemplate(template, firstName) {
+  if (!template || typeof template !== "string") return "";
+  const nameVal = firstName || "there";
+  const capitalized = nameVal.charAt(0).toUpperCase() + nameVal.slice(1);
+  return template
+    .replace(/\{Name\}/g, capitalized)
+    .replace(/\{name\}/g, capitalized);
+}
+
+/**
+ * Returns merged template object combining standard TEMPLATES with user's custom database templates.
+ */
+function getMergedTemplates(customTemplates) {
+  if (!customTemplates || typeof customTemplates !== "object") {
+    return TEMPLATES;
+  }
+  const merged = { ...TEMPLATES };
+  for (const cat of Object.keys(customTemplates)) {
+    if (Array.isArray(customTemplates[cat]) && customTemplates[cat].length > 0) {
+      merged[cat] = customTemplates[cat];
+    }
+  }
+  return merged;
+}

@@ -80,7 +80,7 @@ async function saveRecentReply(reply) {
 const REPLY_ANGLES = [
   // Question angles
   { id: 0, text: "Ask one specific question about what happens next — something that proves you actually read the post, not a generic 'what do you think?' question." },
-  { id: 1, text: "Ask what the person would do differently if they started this today with what they know now." },
+  { id: 1, text: "Ask about a specific constraint, trade-off, or unexpected bottleneck encountered while doing this." },
   { id: 2, text: "Ask about the edge case or the one scenario where this breaks down." },
   { id: 3, text: "Ask a question that reveals the hidden assumption in the post." },
   { id: 4, text: "Ask what metric or signal they're using to know this is actually working." },
@@ -170,13 +170,6 @@ function pickRandom(arr) {
 }
 
 /**
- * Fills {name} placeholder in a template string.
- */
-function fillTemplate(template, firstName) {
-  return template.replace(/\{name\}/g, firstName);
-}
-
-/**
  * Detects if the post matches a direct-template category (connect / thanks / congrats).
  * Returns the category key or null.
  */
@@ -202,11 +195,6 @@ function detectBroadCategory(text) {
 
 // ---------- Length config ----------
 
-/**
- * Returns the prompt instruction and max_tokens ceiling for a given length setting.
- * max_tokens acts as a hard backstop — the model cannot produce more tokens than this
- * even if it ignores the word-count instruction.
- */
 function getLengthConfig(length) {
   switch ((length || "Medium").trim()) {
     case "Short":
@@ -230,7 +218,7 @@ function getLengthConfig(length) {
 
 // ---------- Prompt builders ----------
 
-function buildSystemPrompt(profile, broadCategory, recentReplies, angle) {
+function buildSystemPrompt(profile, broadCategory, recentReplies, angle, activeTemplates) {
   const lengthCfg = getLengthConfig(profile.length);
   const recentOpeners = extractRecentOpeners(recentReplies);
 
@@ -247,11 +235,11 @@ function buildSystemPrompt(profile, broadCategory, recentReplies, angle) {
     "Sound like a real human who has an opinion, a memory, or a genuine reaction — not a bot completing a task.",
     "The reply should feel like it came from someone scrolling their feed and pausing on this post.",
     "",
-    "== BANNED OPENERS — NEVER start a reply with any of these ==",
+    "== BANNED OPENERS & CLICHÉ PHRASES — NEVER start a reply or use any of these ==",
     "Single-word reactions: Right, Yeah, Yep, Nope, True, Fact, Facts, Same, Agreed, Correct, Exactly, Totally, Absolutely, Definitely, Seriously, Honestly, Clearly, Obviously, Literally",
     "Hollow affirmations: Great, Nice, Wow, Cool, Amazing, Incredible, Brilliant, Perfect, Wonderful, Love this, This is so true, So true, Well said, Such a great point, I completely agree",
     "Filler openers: Right?, Ha!, Haha, Lol, OMG, Oh wow, Oh man, Oh no, Indeed, Interesting, That's, It's like, This is like",
-    "Life-coach phrases: Congrats on, So proud, This is inspiring, Keep going, You got this",
+    "Life-coach & generic boilerplate questions/phrases (STRICTLY FORBIDDEN): 'What would you change if starting fresh today?', 'What would you do differently if starting over?', 'If you were starting over', 'What's next?', 'Keep shipping', 'So proud', 'This is inspiring', 'You got this'",
     "Simile/analogy openers (STRICTLY FORBIDDEN): 'That's like...', 'It's like...', 'This is like...', 'Think of it as...', 'Imagine if...', 'Kind of like...'",
     "RULE: Do NOT start with ANY single word followed by punctuation (Right!, Yeah., True,). Jump straight into the substance.",
     "",
@@ -286,10 +274,11 @@ function buildSystemPrompt(profile, broadCategory, recentReplies, angle) {
   lines.push(`Tone: ${profile.tone || "Witty"}`);
 
   // Inject category-specific example replies as tone guidance
-  if (broadCategory && TEMPLATES[broadCategory]) {
+  const tPool = activeTemplates || TEMPLATES;
+  if (broadCategory && tPool[broadCategory]) {
     lines.push("");
     lines.push(`== TOPIC CATEGORY: ${broadCategory.toUpperCase()} — example replies in this style ==`);
-    const examples = TEMPLATES[broadCategory].slice(0, 4);
+    const examples = tPool[broadCategory].slice(0, 4);
     examples.forEach((ex, i) => lines.push(`${i + 1}. ${ex}`));
     lines.push("Match the directness and voice of these examples, but write something original for this specific post.");
   }
@@ -338,17 +327,23 @@ async function generateReply(context) {
   const firstName = extractFirstName(context);
   const tweetText = context.text || "";
 
+  const profile = await getProfile();
+
+  // Active template pool (merged user custom database + default templates)
+  const activeTemplates = typeof getMergedTemplates === "function"
+    ? getMergedTemplates(profile.customTemplates)
+    : TEMPLATES;
+
   // ── 1. Template short-circuit ──────────────────────────────────────────
   // For common intents (connect / thanks / congrats), pick a template directly.
   // No API call needed — instant response.
   const templateCategory = detectTemplateIntent(tweetText);
-  if (templateCategory && TEMPLATES[templateCategory]) {
-    const template = pickRandom(TEMPLATES[templateCategory]);
+  if (templateCategory && activeTemplates[templateCategory] && activeTemplates[templateCategory].length > 0) {
+    const template = pickRandom(activeTemplates[templateCategory]);
     return fillTemplate(template, firstName);
   }
 
   // ── 2. AI generation ────────────────────────────────────────────────────
-  const profile = await getProfile();
   const apiKey = profile.apiKey;
 
   if (!apiKey) throw new Error("Add your OpenAI API key in the extension options first.");
@@ -362,7 +357,7 @@ async function generateReply(context) {
     model: MODEL,
     max_tokens: lengthCfg.max_tokens,
     messages: [
-      { role: "system", content: buildSystemPrompt(profile, broadCategory, recentReplies, angle) },
+      { role: "system", content: buildSystemPrompt(profile, broadCategory, recentReplies, angle, activeTemplates) },
       { role: "user",   content: buildUserMessage(context) },
     ],
   };
@@ -408,9 +403,7 @@ async function generateReply(context) {
 
 // ---------- Post-processing ----------
 
-// Catches patterns that slip through the system prompt, including the notorious
-// 'That's like...', 'It's like...', simile openers, and all known filler words.
-const BANNED_OPENER_RE = /^(that'?s like|it'?s like|this is like|think of it|imagine if|kind of like|just like|right|yeah|yep|nope|true|fact|facts|same|agreed|correct|exactly|totally|absolutely|definitely|seriously|honestly|clearly|obviously|literally|great|nice|wow|cool|amazing|incredible|brilliant|perfect|wonderful|haha|lol|omg|indeed|interesting|ha|that'?s)[!?.,…\s]+/i;
+const BANNED_OPENER_RE = /^(that'?s like|it'?s like|this is like|think of it|imagine if|kind of like|just like|right|yeah|yep|nope|true|fact|facts|same|agreed|correct|exactly|totally|absolutely|definitely|seriously|honestly|clearly|obviously|literally|great|nice|wow|cool|amazing|incredible|brilliant|perfect|wonderful|haha|lol|omg|indeed|interesting|ha|that'?s|what would you change|if starting fresh|if you were starting over|starting fresh today)[!?.,…\s]+/i;
 
 function stripBannedOpener(text) {
   const stripped = text.replace(BANNED_OPENER_RE, "");

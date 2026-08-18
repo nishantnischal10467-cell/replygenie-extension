@@ -8,7 +8,7 @@ body {
 }
 
 .wrap {
-  max-width: 560px;
+  max-width: 600px;
   margin: 40px auto;
   background: #fff;
   border-radius: 16px;
@@ -17,12 +17,28 @@ body {
 }
 
 h1 { font-size: 22px; margin: 0 0 8px; }
+h2 { font-size: 18px; margin: 0 0 6px; color: #111827; }
+
+.divider {
+  border: none;
+  border-top: 1px solid #e5e7eb;
+  margin: 28px 0 20px;
+}
 
 .note {
   font-size: 13px;
   color: #6b7280;
   line-height: 1.5;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
+}
+
+.note code {
+  background: #f3f4f6;
+  padding: 2px 5px;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #4136D8;
+  font-weight: 600;
 }
 
 .field { margin-bottom: 20px; }
@@ -35,7 +51,8 @@ h1 { font-size: 22px; margin: 0 0 8px; }
 }
 
 .field input,
-.field textarea {
+.field textarea,
+.styled-select {
   width: 100%;
   padding: 10px 12px;
   border: 1px solid #d7dae0;
@@ -43,6 +60,19 @@ h1 { font-size: 22px; margin: 0 0 8px; }
   font-size: 14px;
   font-family: inherit;
   resize: vertical;
+  background-color: #fff;
+}
+
+.styled-select {
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.field-inline {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
 }
 
 .hint {
@@ -71,6 +101,101 @@ h1 { font-size: 22px; margin: 0 0 8px; }
   background: #4136D8;
   border-color: #4136D8;
   color: #fff;
+}
+
+/* Template Database Manager */
+
+.tpl-db-section {
+  background: #fafafa;
+  border: 1px solid #f0f0f0;
+  border-radius: 12px;
+  padding: 18px;
+  margin-bottom: 24px;
+}
+
+.tpl-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 240px;
+  overflow-y: auto;
+  margin-bottom: 12px;
+  padding-right: 4px;
+}
+
+.tpl-item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+
+  line-height: 1.4;
+}
+
+.tpl-text {
+  color: #1f2937;
+  word-break: break-word;
+}
+
+.tpl-del-btn {
+  background: transparent;
+  border: none;
+  color: #9ca3af;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0 4px;
+  margin-left: 8px;
+  line-height: 1;
+}
+
+.tpl-del-btn:hover {
+  color: #ef4444;
+}
+
+.empty-tpl {
+  font-size: 12px;
+  color: #9ca3af;
+  font-style: italic;
+  padding: 12px 0;
+  text-align: center;
+}
+
+.add-tpl-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.add-tpl-row input {
+  flex: 1;
+}
+
+.primary-sub {
+  background: #4136D8 !important;
+  color: #fff !important;
+  border-color: #4136D8 !important;
+  margin-top: 0 !important;
+}
+
+.danger-link {
+  color: #dc2626 !important;
+  border-color: #fca5a5 !important;
+  background: #fff !important;
+  margin-top: 0 !important;
+}
+
+.danger-link:hover {
+  background: #fef2f2 !important;
+}
+
+.tpl-actions {
+  display: flex;
+  justify-content: flex-end;
 }
 
 .save-btn {

@@ -11,12 +11,13 @@ const DEFAULT_PROFILE = {
   length: "Medium",
   autoCopy: true,
   jumpToPosts: true,
-  voiceSamples: [] // learned from the user's own manual replies
+  voiceSamples: [], // learned from the user's own manual replies
+  customTemplates: {} // user-managed template database keyed by category (e.g., congratulations, connect, thanks)
 };
 
 function getProfile() {
   return new Promise((resolve) => {
-    chrome.storage.sync.get({ profile: DEFAULT_PROFILE }, (data) => resolve(data.profile));
+    chrome.storage.sync.get({ profile: DEFAULT_PROFILE }, (data) => resolve(data.profile || DEFAULT_PROFILE));
   });
 }
 
@@ -27,4 +28,12 @@ function saveProfile(partial) {
       chrome.storage.sync.set({ profile: merged }, () => resolve(merged));
     });
   });
+}
+
+function getCustomTemplates() {
+  return getProfile().then((p) => p.customTemplates || {});
+}
+
+function saveCustomTemplates(customTemplates) {
+  return saveProfile({ customTemplates });
 }
