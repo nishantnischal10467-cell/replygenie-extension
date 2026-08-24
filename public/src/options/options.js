@@ -13,7 +13,9 @@ let selectedLength = "Medium";
 let currentCustomTemplates = {};
 
 function setActiveChip(containerId, value) {
-  document.querySelectorAll(`#${containerId} button`).forEach((btn) => {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.querySelectorAll("button").forEach((btn) => {
     btn.classList.toggle("active", btn.dataset.value === value);
   });
 }
@@ -29,8 +31,11 @@ function getActiveTemplatesForCategory(categoryKey) {
 }
 
 function renderTemplates() {
-  const categoryKey = document.getElementById("tpl-category").value;
-  const listEl = document.getElementById("tpl-list");
+  const selectEl = document.getElementById("tplCategorySelect") || document.getElementById("tpl-category");
+  const listEl = document.getElementById("tplListContainer") || document.getElementById("tpl-list");
+  if (!selectEl || !listEl) return;
+
+  const categoryKey = selectEl.value;
   const items = getActiveTemplatesForCategory(categoryKey);
 
   listEl.innerHTML = "";
@@ -71,8 +76,11 @@ function deleteTemplateItem(categoryKey, index) {
 }
 
 function addTemplateItem() {
-  const categoryKey = document.getElementById("tpl-category").value;
-  const inputEl = document.getElementById("new-tpl-input");
+  const selectEl = document.getElementById("tplCategorySelect") || document.getElementById("tpl-category");
+  const inputEl = document.getElementById("newTplInput") || document.getElementById("new-tpl-input");
+  if (!selectEl || !inputEl) return;
+
+  const categoryKey = selectEl.value;
   const text = inputEl.value.trim();
 
   if (!text) return;
@@ -86,7 +94,9 @@ function addTemplateItem() {
 }
 
 function resetCategoryTemplates() {
-  const categoryKey = document.getElementById("tpl-category").value;
+  const selectEl = document.getElementById("tplCategorySelect") || document.getElementById("tpl-category");
+  if (!selectEl) return;
+  const categoryKey = selectEl.value;
   delete currentCustomTemplates[categoryKey];
   renderTemplates();
 }
@@ -103,8 +113,18 @@ function load() {
     setActiveChip("tone-chips", selectedTone);
     setActiveChip("length-chips", selectedLength);
 
-    const count = (profile.voiceSamples || []).length;
-    document.getElementById("voice-count").textContent = `${count} repl${count === 1 ? "y" : "ies"} learned so far`;
+    const voiceSamples = profile.voiceSamples || [];
+    const count = voiceSamples.length;
+    const voiceCountEl = document.getElementById("voice-count");
+    if (voiceCountEl) {
+      voiceCountEl.textContent = `${count} repl${count === 1 ? "y" : "ies"} learned so far`;
+    }
+    const voiceSamplesTextEl = document.getElementById("voiceSamplesText");
+    if (voiceSamplesTextEl) {
+      voiceSamplesTextEl.value = voiceSamples.length > 0 
+        ? voiceSamples.join("\n\n") 
+        : "";
+    }
 
     currentCustomTemplates = profile.customTemplates || {};
     renderTemplates();
@@ -127,44 +147,64 @@ document.querySelectorAll("#length-chips button").forEach((btn) => {
   });
 });
 
-document.getElementById("clear-voice").addEventListener("click", () => {
-  chrome.storage.sync.get({ profile: {} }, (data) => {
-    const merged = { ...data.profile, voiceSamples: [] };
-    chrome.storage.sync.set({ profile: merged }, load);
-  });
-});
-
-document.getElementById("tpl-category").addEventListener("change", renderTemplates);
-
-document.getElementById("add-tpl-btn").addEventListener("click", addTemplateItem);
-
-document.getElementById("new-tpl-input").addEventListener("keypress", (e) => {
-  if (e.key === "Enter") {
-    e.preventDefault();
-    addTemplateItem();
-  }
-});
-
-document.getElementById("reset-category-btn").addEventListener("click", resetCategoryTemplates);
-
-document.getElementById("save").addEventListener("click", () => {
-  chrome.storage.sync.get({ profile: {} }, (data) => {
-    const updates = {};
-    fields.forEach((f) => {
-      const el = document.getElementById(f);
-      if (el) updates[f] = el.value.trim();
-    });
-    updates.tone = selectedTone;
-    updates.length = selectedLength;
-    updates.customTemplates = currentCustomTemplates;
-
-    const merged = { ...data.profile, ...updates };
-    chrome.storage.sync.set({ profile: merged }, () => {
-      const msg = document.getElementById("saved-msg");
-      msg.textContent = "Saved profile & templates ✓";
-      setTimeout(() => (msg.textContent = ""), 1800);
+const clearVoiceBtn = document.getElementById("clearVoice") || document.getElementById("clear-voice");
+if (clearVoiceBtn) {
+  clearVoiceBtn.addEventListener("click", () => {
+    chrome.storage.sync.get({ profile: {} }, (data) => {
+      const merged = { ...data.profile, voiceSamples: [] };
+      chrome.storage.sync.set({ profile: merged }, load);
     });
   });
-});
+}
+
+const categorySelect = document.getElementById("tplCategorySelect") || document.getElementById("tpl-category");
+if (categorySelect) {
+  categorySelect.addEventListener("change", renderTemplates);
+}
+
+const addBtn = document.getElementById("addTplBtn") || document.getElementById("add-tpl-btn");
+if (addBtn) {
+  addBtn.addEventListener("click", addTemplateItem);
+}
+
+const newTplInput = document.getElementById("newTplInput") || document.getElementById("new-tpl-input");
+if (newTplInput) {
+  newTplInput.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      addTemplateItem();
+    }
+  });
+}
+
+const resetBtn = document.getElementById("resetTplBtn") || document.getElementById("reset-category-btn");
+if (resetBtn) {
+  resetBtn.addEventListener("click", resetCategoryTemplates);
+}
+
+const saveBtn = document.getElementById("save");
+if (saveBtn) {
+  saveBtn.addEventListener("click", () => {
+    chrome.storage.sync.get({ profile: {} }, (data) => {
+      const updates = {};
+      fields.forEach((f) => {
+        const el = document.getElementById(f);
+        if (el) updates[f] = el.value.trim();
+      });
+      updates.tone = selectedTone;
+      updates.length = selectedLength;
+      updates.customTemplates = currentCustomTemplates;
+
+      const merged = { ...data.profile, ...updates };
+      chrome.storage.sync.set({ profile: merged }, () => {
+        const msg = document.getElementById("savedMsg") || document.getElementById("saved-msg");
+        if (msg) {
+          msg.textContent = "Saved profile & settings ✓";
+          setTimeout(() => (msg.textContent = ""), 1800);
+        }
+      });
+    });
+  });
+}
 
 load();

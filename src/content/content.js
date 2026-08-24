@@ -208,6 +208,81 @@ function copyToClipboard(text) {
   });
 }
 
+// ---------- Extension messaging helpers ----------
+
+async function sendExtensionMessage(msg) {
+  return new Promise((resolve, reject) => {
+    try {
+      if (!chrome.runtime || !chrome.runtime.id) {
+        return reject(new Error("Extension reloaded or updated. Please refresh this page."));
+      }
+      chrome.runtime.sendMessage(msg, (response) => {
+        const err = chrome.runtime.lastError;
+        if (err) {
+          const msgText = err.message || String(err);
+          if (msgText.includes("invalidated") || msgText.includes("Extension context")) {
+            return reject(new Error("Extension reloaded or updated. Please refresh this page."));
+          }
+          // Fallback to Port if sendMessage fails
+          sendViaPort(msg).then(resolve).catch(reject);
+          return;
+        }
+        if (!response) {
+          return reject(new Error("No response from extension background script."));
+        }
+        if (response.error) {
+          return reject(new Error(response.error));
+        }
+        resolve(response);
+      });
+    } catch (e) {
+      if (e.message && (e.message.includes("invalidated") || e.message.includes("Extension context"))) {
+        reject(new Error("Extension reloaded or updated. Please refresh this page."));
+      } else {
+        sendViaPort(msg).then(resolve).catch(reject);
+      }
+    }
+  });
+}
+
+function sendViaPort(msg) {
+  return new Promise((resolve, reject) => {
+    let port;
+    try {
+      port = chrome.runtime.connect({ name: "reply-genie" });
+    } catch (e) {
+      const errText = e.message || String(e);
+      if (errText.includes("invalidated")) {
+        return reject(new Error("Extension reloaded or updated. Please refresh this page."));
+      }
+      return reject(new Error("Could not connect to extension. Try reloading the page."));
+    }
+
+    let handled = false;
+    port.onMessage.addListener((response) => {
+      handled = true;
+      port.disconnect();
+      if (response.error) {
+        reject(new Error(response.error));
+      } else {
+        resolve(response);
+      }
+    });
+
+    port.onDisconnect.addListener(() => {
+      if (handled) return;
+      const lastErr = chrome.runtime.lastError;
+      if (lastErr && lastErr.message && (lastErr.message.includes("invalidated") || lastErr.message.includes("Extension context"))) {
+        reject(new Error("Extension reloaded or updated. Please refresh this page."));
+      } else {
+        reject(new Error("Extension disconnected — retrying in a moment."));
+      }
+    });
+
+    port.postMessage(msg);
+  });
+}
+
 // ---------- Main flow ----------
 
 async function handleSuggestClick(article, btn) {
@@ -218,43 +293,19 @@ async function handleSuggestClick(article, btn) {
   const ctx = extractTweetContext(article);
   showCard(btn, { status: "loading" });
 
-  // Use a long-lived port so the MV3 service worker isn't killed mid-fetch
-  let port;
   try {
-    port = chrome.runtime.connect({ name: "reply-genie" });
-  } catch (e) {
+    const res = await sendExtensionMessage({ type: "GENERATE_REPLY", context: ctx });
     _inFlight.delete(article);
-    showCard(btn, { status: "error", message: "Could not connect to extension. Try reloading the page.", article });
-    startCooldown(btn);
-    return;
-  }
-
-  port.onMessage.addListener((response) => {
-    port.disconnect();
-    _inFlight.delete(article);
-    if (response.error) {
-      showCard(btn, { status: "error", message: response.error, article });
-      startCooldown(btn);
-      return;
-    }
     chrome.storage.sync.get({ profile: { autoCopy: true } }, (data) => {
       const autoCopy = data.profile ? data.profile.autoCopy !== false : true;
-      if (autoCopy) copyToClipboard(response.reply);
-      showCard(btn, { status: "done", reply: response.reply, copied: autoCopy, article });
+      if (autoCopy) copyToClipboard(res.reply);
+      showCard(btn, { status: "done", reply: res.reply, copied: autoCopy, article });
     });
-  });
-
-  port.onDisconnect.addListener(() => {
+  } catch (err) {
     _inFlight.delete(article);
-    // Only show error if the card is still in loading state
-    const card = document.getElementById(CARD_ID);
-    if (card && card.querySelector(".rg-spinner")) {
-      showCard(btn, { status: "error", message: "Extension disconnected — retrying in a moment.", article });
-      startCooldown(btn);
-    }
-  });
-
-  port.postMessage({ type: "GENERATE_REPLY", context: ctx });
+    showCard(btn, { status: "error", message: err.message || String(err), article });
+    startCooldown(btn);
+  }
 }
 
 // ---------- Learn voice from the user's own manually-sent replies ----------
@@ -273,13 +324,7 @@ function watchForManualReplies() {
       const editor = document.querySelector('[data-testid="tweetTextarea_0"]');
       const text = editor ? editor.innerText.trim() : "";
       if (text && text.length > 0) {
-        try {
-          const port = chrome.runtime.connect({ name: "reply-genie" });
-          port.postMessage({ type: "LEARN_FROM_REPLY", replyText: text });
-          port.onMessage.addListener(() => port.disconnect());
-        } catch (e) {
-          // Non-critical — silently ignore if extension isn't ready
-        }
+        sendExtensionMessage({ type: "LEARN_FROM_REPLY", replyText: text }).catch(() => {});
       }
     },
     true

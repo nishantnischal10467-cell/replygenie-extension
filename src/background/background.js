@@ -6,31 +6,52 @@ importScripts("templates.js");
 const API_URL = "https://api.openai.com/v1/chat/completions";
 const MODEL   = "gpt-4o-mini";
 
-// ---------- Long-lived port listener (MV3-safe for async work) ----------
+// ---------- Messaging listeners (MV3-safe for async work & service worker wakeups) ----------
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.type === "GENERATE_REPLY") {
+    generateReply(message.context)
+      .then((reply) => sendResponse({ reply }))
+      .catch((err) => sendResponse({ error: err.message || String(err) }));
+    return true; // Keep channel open for async sendResponse
+  }
+  if (message.type === "LEARN_FROM_REPLY") {
+    learnFromReply(message.replyText)
+      .then(() => sendResponse({ ok: true }))
+      .catch((err) => sendResponse({ error: err.message || String(err) }));
+    return true;
+  }
+});
 
 chrome.runtime.onConnect.addListener((port) => {
   if (port.name !== "reply-genie") return;
+
+  let disconnected = false;
+  port.onDisconnect.addListener(() => {
+    disconnected = true;
+  });
 
   port.onMessage.addListener(async (message) => {
     if (message.type === "GENERATE_REPLY") {
       try {
         const reply = await generateReply(message.context);
-        port.postMessage({ reply });
+        if (!disconnected) port.postMessage({ reply });
       } catch (err) {
         console.error("[ReplyGenie] generateReply failed:", err);
-        port.postMessage({ error: err.message || String(err) });
+        if (!disconnected) port.postMessage({ error: err.message || String(err) });
       }
     }
     if (message.type === "LEARN_FROM_REPLY") {
       try {
         await learnFromReply(message.replyText);
-        port.postMessage({ ok: true });
+        if (!disconnected) port.postMessage({ ok: true });
       } catch (err) {
-        port.postMessage({ error: err.message || String(err) });
+        if (!disconnected) port.postMessage({ error: err.message || String(err) });
       }
     }
   });
 });
+
 
 // ---------- Profile ----------
 
