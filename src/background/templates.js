@@ -209,3 +209,14 @@ function getMergedTemplates(customTemplates) {
   }
   return merged;
 }
+
+// Node.js / Jest compatibility
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = {
+    TEMPLATES,
+    INTENT_PATTERNS,
+    BROAD_CATEGORY_PATTERNS,
+    fillTemplate,
+    getMergedTemplates,
+  };
+}

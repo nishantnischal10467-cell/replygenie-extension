@@ -24,12 +24,19 @@ jobs:
 
       - name: Run syntax checks before packaging
         run: |
-          node --check background.js
-          node --check content.js
-          node --check popup.js
-          node --check options.js
-          node --check storage.js
-          node --check templates.js
+          # Core extension files
+          node --check src/background/background.js
+          node --check src/background/templates.js
+          node --check src/background/storage.js
+          # Phase 1 safety rails
+          node --check src/background/flags.js
+          node --check src/background/governor.js
+          node --check src/background/logger.js
+          node --check src/background/prompt.js
+          # UI files
+          node --check src/content/content.js
+          node --check src/popup/popup.js
+          node --check src/options/options.js
           node -e "JSON.parse(require('fs').readFileSync('manifest.json','utf8')); console.log('manifest.json OK')"
 
       - name: Extract version from tag
@@ -41,21 +48,24 @@ jobs:
           VERSION=${{ steps.version.outputs.VERSION }}
           FILENAME="replygenie-extension-v${VERSION}.zip"
 
-          # Only include the files Chrome actually needs to load the extension.
-          # Exclude: landing page, GitHub files, docs, dev artifacts.
+          # Phase 1 safety-rail modules (importScripts targets — relative to src/background/)
           zip -r "$FILENAME" \
             manifest.json \
-            background.js \
-            content.js \
-            content.css \
-            popup.html \
-            popup.js \
-            popup.css \
-            options.html \
-            options.js \
-            options.css \
-            storage.js \
-            templates.js \
+            src/background/background.js \
+            src/background/templates.js \
+            src/background/storage.js \
+            src/background/flags.js \
+            src/background/governor.js \
+            src/background/logger.js \
+            src/background/prompt.js \
+            src/content/content.js \
+            src/content/content.css \
+            src/popup/popup.html \
+            src/popup/popup.js \
+            src/popup/popup.css \
+            src/options/options.html \
+            src/options/options.js \
+            src/options/options.css \
             icons/
 
           echo "Created: $FILENAME"

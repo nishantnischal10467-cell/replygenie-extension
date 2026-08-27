@@ -1,7 +1,11 @@
 // background.js — MV3 service worker
 
-// Load the reply template library (sets global TEMPLATES, INTENT_PATTERNS, BROAD_CATEGORY_PATTERNS)
-importScripts("templates.js");
+// Load shared modules — order matters: templates first (no deps), then Phase 1 safety rails.
+importScripts("templates.js"); // TEMPLATES, INTENT_PATTERNS, BROAD_CATEGORY_PATTERNS
+importScripts("flags.js");     // getFlags(), DEFAULT_FLAGS
+importScripts("governor.js");  // checkGovernor(), recordGovernorEvent()
+importScripts("logger.js");    // logTrace()
+importScripts("prompt.js");    // buildPromptContext(), makeSourcePostId(), extractFirstName()
 
 const API_URL = "https://api.openai.com/v1/chat/completions";
 const MODEL   = "gpt-4o-mini";
@@ -171,17 +175,8 @@ function extractRecentOpeners(recentReplies) {
 }
 
 // ---------- Template helpers ----------
-
-/**
- * Extracts the first name from the author's display name or handle.
- * "John Doe" → "John", "@johndoe" → "Johndoe", "" → "there"
- */
-function extractFirstName(context) {
-  const source = context.displayName || context.handle || "";
-  const cleaned = source.replace(/^@/, "").split(/[\s_]/)[0].replace(/[^a-zA-Z]/g, "");
-  if (!cleaned) return "there";
-  return cleaned.charAt(0).toUpperCase() + cleaned.slice(1).toLowerCase();
-}
+// NOTE: extractFirstName() is now defined in prompt.js (importScripts above).
+// It is available as a global here — no redeclaration needed.
 
 /**
  * Picks a random item from an array.
@@ -345,7 +340,14 @@ function buildUserMessage(context) {
 // ---------- Main reply generator ----------
 
 async function generateReply(context) {
-  const firstName = extractFirstName(context);
+  const _t0 = Date.now();
+
+  // ── Load feature flags — determines which Phase 1 rails are active ──────
+  // When all flags are false (default), execution is byte-for-byte identical
+  // to the pre-Phase-1 behaviour.
+  const _flags = await getFlags();
+
+  const firstName = extractFirstName(context); // defined in prompt.js
   const tweetText = context.text || "";
 
   const profile = await getProfile();
@@ -356,30 +358,86 @@ async function generateReply(context) {
     : TEMPLATES;
 
   // ── 1. Template short-circuit ──────────────────────────────────────────
-  // For common intents (connect / thanks / congrats), pick a template directly.
-  // No API call needed — instant response.
   const templateCategory = detectTemplateIntent(tweetText);
   if (templateCategory && activeTemplates[templateCategory] && activeTemplates[templateCategory].length > 0) {
     const template = pickRandom(activeTemplates[templateCategory]);
-    return fillTemplate(template, firstName);
+    const templateReply = fillTemplate(template, firstName);
+
+    if (_flags.ENABLE_DECISION_LOGGING) {
+      logTrace({
+        source_post_id:    makeSourcePostId(context),
+        decision_path:     "template:" + templateCategory,
+        model_version:     "template",
+        outcome:           "success",
+        latency_ms:        Date.now() - _t0,
+        injection_flagged: false,
+      }).catch(() => {});
+    }
+
+    return templateReply;
   }
 
   // ── 2. AI generation ────────────────────────────────────────────────────
-  const apiKey = profile.apiKey;
 
-  if (!apiKey) throw new Error("Add your OpenAI API key in the extension options first.");
+  // Governor check — flag-gated. When ENABLE_RATE_GOVERNOR is false, no cap applied.
+  if (_flags.ENABLE_RATE_GOVERNOR) {
+    const _gov = await checkGovernor();
+    if (!_gov.allowed) {
+      if (_flags.ENABLE_DECISION_LOGGING) {
+        logTrace({
+          source_post_id:    makeSourcePostId(context),
+          decision_path:     "ai:rate_limited",
+          model_version:     MODEL,
+          outcome:           "rate_limited",
+          latency_ms:        Date.now() - _t0,
+          injection_flagged: false,
+        }).catch(() => {});
+      }
+      throw new Error(_gov.reason);
+    }
+  }
+
+  const apiKey = profile.apiKey;
+  if (!apiKey) {
+    if (_flags.ENABLE_DECISION_LOGGING) {
+      logTrace({
+        source_post_id: makeSourcePostId(context),
+        decision_path:  "ai:no_api_key",
+        model_version:  MODEL,
+        outcome:        "no_api_key",
+        latency_ms:     Date.now() - _t0,
+        injection_flagged: false,
+      }).catch(() => {});
+    }
+    throw new Error("Add your OpenAI API key in the extension options first.");
+  }
 
   const broadCategory = detectBroadCategory(tweetText);
   const lengthCfg     = getLengthConfig(profile.length);
   const recentReplies = await getRecentReplies();
-  const angle         = await pickAngle(); // async — reads + writes used angle ids
+  const angle         = await pickAngle();
+
+  // Prompt isolation — flag-gated. When ENABLE_PROMPT_ISOLATION is false,
+  // buildUserMessage() is used unchanged (identical to pre-Phase-1).
+  let _userMessage;
+  let _injectionFlagged = false;
+  let _systemExtra      = "";
+
+  if (_flags.ENABLE_PROMPT_ISOLATION) {
+    const _ctx       = buildPromptContext(context); // defined in prompt.js
+    _userMessage     = _ctx.userBlock;
+    _injectionFlagged = _ctx.injectionFlagged;
+    _systemExtra     = _ctx.systemPreamble + "\n\n";
+  } else {
+    _userMessage = buildUserMessage(context);
+  }
 
   const body = {
     model: MODEL,
     max_tokens: lengthCfg.max_tokens,
     messages: [
-      { role: "system", content: buildSystemPrompt(profile, broadCategory, recentReplies, angle, activeTemplates) },
-      { role: "user",   content: buildUserMessage(context) },
+      { role: "system", content: _systemExtra + buildSystemPrompt(profile, broadCategory, recentReplies, angle, activeTemplates) },
+      { role: "user",   content: _userMessage },
     ],
   };
 
@@ -399,12 +457,37 @@ async function generateReply(context) {
       },
       body: JSON.stringify(body),
     });
+  } catch (fetchErr) {
+    clearInterval(keepAlive);
+    if (_flags.ENABLE_DECISION_LOGGING) {
+      logTrace({
+        source_post_id:    makeSourcePostId(context),
+        decision_path:     "ai:gpt-4o-mini",
+        model_version:     MODEL,
+        outcome:           "error",
+        latency_ms:        Date.now() - _t0,
+        injection_flagged: _injectionFlagged,
+        error_code:        "network_error",
+      }).catch(() => {});
+    }
+    throw fetchErr;
   } finally {
     clearInterval(keepAlive);
   }
 
   if (!res.ok) {
     const errText = await res.text();
+    if (_flags.ENABLE_DECISION_LOGGING) {
+      logTrace({
+        source_post_id:    makeSourcePostId(context),
+        decision_path:     "ai:gpt-4o-mini",
+        model_version:     MODEL,
+        outcome:           "error",
+        latency_ms:        Date.now() - _t0,
+        injection_flagged: _injectionFlagged,
+        error_code:        String(res.status),
+      }).catch(() => {});
+    }
     throw new Error(`API error (${res.status}): ${errText.slice(0, 300)}`);
   }
 
@@ -416,9 +499,24 @@ async function generateReply(context) {
 
   const reply = stripBannedOpener(choice.message.content.trim());
 
-  // Save to history so next request can avoid the same patterns
-  saveRecentReply(reply).catch(() => {}); // fire-and-forget, non-critical
+  // Record governor event after a successful call
+  if (_flags.ENABLE_RATE_GOVERNOR) {
+    recordGovernorEvent().catch(() => {}); // fire-and-forget
+  }
 
+  // Log success trace
+  if (_flags.ENABLE_DECISION_LOGGING) {
+    logTrace({
+      source_post_id:    makeSourcePostId(context),
+      decision_path:     "ai:gpt-4o-mini",
+      model_version:     MODEL,
+      outcome:           "success",
+      latency_ms:        Date.now() - _t0,
+      injection_flagged: _injectionFlagged,
+    }).catch(() => {});
+  }
+
+  saveRecentReply(reply).catch(() => {}); // fire-and-forget, non-critical
   return reply;
 }
 
