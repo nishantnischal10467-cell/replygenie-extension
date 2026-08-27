@@ -10,6 +10,10 @@ importScripts("db/schema.js");
 importScripts("db/migrations.js");
 importScripts("db/database.js");
 importScripts("db/retention.js");
+importScripts("embeddings.js"); // cosineSimilarity, generateEmbedding
+importScripts("analyzer.js");   // PostAnalyzer
+importScripts("retriever.js");  // ReplyRetriever
+importScripts("pacer.js");      // X-side PacingEngine
 
 if (typeof initRetentionSchedule === "function") {
   initRetentionSchedule();

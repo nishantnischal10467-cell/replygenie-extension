@@ -38,6 +38,12 @@ jobs:
           node --check src/background/db/migrations.js
           node --check src/background/db/database.js
           node --check src/background/db/retention.js
+          # Phase 3 analyzer, embeddings, retrieval & pacing
+          node --check src/background/embeddings.js
+          node --check src/background/analyzer.js
+          node --check src/background/retriever.js
+          node --check src/background/pacer.js
+          node --check src/content/pacer.js
           # UI files
           node --check src/content/content.js
           node --check src/popup/popup.js
@@ -66,8 +72,13 @@ jobs:
             src/background/logger.js \
             src/background/prompt.js \
             src/background/db/ \
+            src/background/embeddings.js \
+            src/background/analyzer.js \
+            src/background/retriever.js \
+            src/background/pacer.js \
             src/content/content.js \
             src/content/content.css \
+            src/content/pacer.js \
             src/popup/popup.html \
             src/popup/popup.js \
             src/popup/popup.css \
@@ -75,6 +86,7 @@ jobs:
             src/options/options.js \
             src/options/options.css \
             icons/
+
 
 
           echo "Created: $FILENAME"

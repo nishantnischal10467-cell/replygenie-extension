@@ -34,6 +34,13 @@ jobs:
           node --check src/background/db/migrations.js
           node --check src/background/db/database.js
           node --check src/background/db/retention.js
+          # Phase 3 analyzer, embeddings, retrieval & pacing
+          node --check src/background/embeddings.js
+          node --check src/background/analyzer.js
+          node --check src/background/retriever.js
+          node --check src/background/pacer.js
+          node --check src/content/pacer.js
+          # UI files
           node --check src/content/content.js
           node --check src/popup/popup.js
           node --check src/options/options.js

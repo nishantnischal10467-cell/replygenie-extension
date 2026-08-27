@@ -457,8 +457,115 @@ var EVAL_FIXTURES = [
     expected: { injectionFlagged: true, templateMatch: null, broadCategory: null },
   },
 
+  // ─────────────────────────────────────────────────────────────────────────
+  // RETRIEVAL EVALUATION FIXTURES (6 posts — verifying candidate semantic search)
+  // ─────────────────────────────────────────────────────────────────────────
+
+  {
+    id: "retrieval_001",
+    category: "retrieval_eval",
+    tweet: {
+      text: "How did you get your first 10 paying customers for your SaaS?",
+      handle: "@bootstrapped",
+      displayName: "Bootstrapper",
+    },
+    expected: {
+      injectionFlagged: false,
+      templateMatch: null,
+      broadCategory: "builder",
+      expectedTopic: "saas_builder",
+      expectedMinCandidates: 1,
+    },
+  },
+
+  {
+    id: "retrieval_002",
+    category: "retrieval_eval",
+    tweet: {
+      text: "Is fine-tuning open source models better than prompt engineering GPT-4o?",
+      handle: "@mlops_dev",
+      displayName: "MLOps Dev",
+    },
+    expected: {
+      injectionFlagged: false,
+      templateMatch: null,
+      broadCategory: "ai",
+      expectedTopic: "ai",
+      expectedMinCandidates: 1,
+    },
+  },
+
+  {
+    id: "retrieval_003",
+    category: "retrieval_eval",
+    tweet: {
+      text: "Organic distribution on social media has completely shifted towards video.",
+      handle: "@growthlead",
+      displayName: "Growth Lead",
+    },
+    expected: {
+      injectionFlagged: false,
+      templateMatch: null,
+      broadCategory: "marketing",
+      expectedTopic: "marketing",
+      expectedMinCandidates: 1,
+    },
+  },
+
+  {
+    id: "retrieval_004",
+    category: "retrieval_eval",
+    tweet: {
+      text: "Rewrote our Python backend in Rust. Memory usage dropped by 85%.",
+      handle: "@systemsdev",
+      displayName: "Systems Dev",
+    },
+    expected: {
+      injectionFlagged: false,
+      templateMatch: null,
+      broadCategory: null,
+      expectedTopic: "engineering",
+      expectedMinCandidates: 1,
+    },
+  },
+
+  {
+    id: "retrieval_005",
+    category: "retrieval_eval",
+    tweet: {
+      text: "Deep work blocks in the morning are non-negotiable if you want to ship consistently.",
+      handle: "@focusmaster",
+      displayName: "Focus Master",
+    },
+    expected: {
+      injectionFlagged: false,
+      templateMatch: null,
+      broadCategory: null,
+      expectedTopic: "productivity",
+      expectedMinCandidates: 1,
+    },
+  },
+
+  {
+    id: "retrieval_006",
+    category: "retrieval_eval",
+    tweet: {
+      text: "Xylophone quantum kaleidoscope 9999 zzz",
+      handle: "@esoteric",
+      displayName: "Random Bot",
+    },
+    expected: {
+      injectionFlagged: false,
+      templateMatch: null,
+      broadCategory: null,
+      expectedTopic: "general",
+      expectedMinCandidates: 0, // Unrelated query - graceful low/none confidence expected
+    },
+  },
+
 ];
 
 if (typeof module !== "undefined" && module.exports) {
   module.exports = { EVAL_FIXTURES };
 }
+
