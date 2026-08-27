@@ -23,13 +23,26 @@ jobs:
       - name: Check JavaScript syntax (node --check)
         run: |
           echo "Checking JS files..."
-          node --check background.js
-          node --check content.js
-          node --check popup.js
-          node --check options.js
-          node --check storage.js
-          node --check templates.js
+          node --check src/background/background.js
+          node --check src/background/templates.js
+          node --check src/background/storage.js
+          node --check src/background/flags.js
+          node --check src/background/governor.js
+          node --check src/background/logger.js
+          node --check src/background/prompt.js
+          node --check src/background/db/schema.js
+          node --check src/background/db/migrations.js
+          node --check src/background/db/database.js
+          node --check src/background/db/retention.js
+          node --check src/content/content.js
+          node --check src/popup/popup.js
+          node --check src/options/options.js
           echo "All JS files passed syntax check ✅"
+
+      - name: Run Jest Test Suite
+        run: |
+          npm test
+
 
       - name: Validate manifest.json
         run: |

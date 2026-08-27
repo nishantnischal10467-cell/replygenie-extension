@@ -1,8 +1,7 @@
-﻿// src/tests/setup.js
-// Jest global setup — stubs the Chrome extension APIs so modules that reference
-// chrome.* can be require()'d without a browser environment.
-// Only stubs are defined here. Tests needing specific return values should
-// use jest.fn() to override them locally.
+// src/tests/setup.js
+// Jest global setup — stubs Chrome extension APIs and IndexedDB for testing.
+
+require("fake-indexeddb/auto");
 
 global.chrome = {
   storage: {
@@ -13,9 +12,18 @@ global.chrome = {
     local: {
       get:  jest.fn((defaults, cb) => cb(defaults)),
       set:  jest.fn((data, cb)     => cb && cb()),
+      clear: jest.fn((cb)          => cb && cb()),
+    },
+  },
+  alarms: {
+    get: jest.fn((name, cb) => cb && cb(null)),
+    create: jest.fn(),
+    onAlarm: {
+      addListener: jest.fn(),
     },
   },
   runtime: {
     lastError: null,
   },
 };
+

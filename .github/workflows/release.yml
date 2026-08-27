@@ -22,7 +22,7 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Run syntax checks before packaging
+      - name: Run syntax checks and tests before packaging
         run: |
           # Core extension files
           node --check src/background/background.js
@@ -33,11 +33,18 @@ jobs:
           node --check src/background/governor.js
           node --check src/background/logger.js
           node --check src/background/prompt.js
+          # Phase 2 database & retention layer
+          node --check src/background/db/schema.js
+          node --check src/background/db/migrations.js
+          node --check src/background/db/database.js
+          node --check src/background/db/retention.js
           # UI files
           node --check src/content/content.js
           node --check src/popup/popup.js
           node --check src/options/options.js
           node -e "JSON.parse(require('fs').readFileSync('manifest.json','utf8')); console.log('manifest.json OK')"
+          # Run test suite
+          npm test
 
       - name: Extract version from tag
         id: version
@@ -48,7 +55,7 @@ jobs:
           VERSION=${{ steps.version.outputs.VERSION }}
           FILENAME="replygenie-extension-v${VERSION}.zip"
 
-          # Phase 1 safety-rail modules (importScripts targets — relative to src/background/)
+          # Include only the files Chrome actually needs to load the extension
           zip -r "$FILENAME" \
             manifest.json \
             src/background/background.js \
@@ -58,6 +65,7 @@ jobs:
             src/background/governor.js \
             src/background/logger.js \
             src/background/prompt.js \
+            src/background/db/ \
             src/content/content.js \
             src/content/content.css \
             src/popup/popup.html \
@@ -67,6 +75,7 @@ jobs:
             src/options/options.js \
             src/options/options.css \
             icons/
+
 
           echo "Created: $FILENAME"
           ls -lh "$FILENAME"

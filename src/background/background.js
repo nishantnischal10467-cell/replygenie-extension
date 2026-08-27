@@ -1,11 +1,19 @@
 // background.js — MV3 service worker
 
-// Load shared modules — order matters: templates first (no deps), then Phase 1 safety rails.
+// Load shared modules — order matters: templates first (no deps), then Phase 1 safety rails, then Phase 2 DB layer.
 importScripts("templates.js"); // TEMPLATES, INTENT_PATTERNS, BROAD_CATEGORY_PATTERNS
 importScripts("flags.js");     // getFlags(), DEFAULT_FLAGS
 importScripts("governor.js");  // checkGovernor(), recordGovernorEvent()
 importScripts("logger.js");    // logTrace()
 importScripts("prompt.js");    // buildPromptContext(), makeSourcePostId(), extractFirstName()
+importScripts("db/schema.js");
+importScripts("db/migrations.js");
+importScripts("db/database.js");
+importScripts("db/retention.js");
+
+if (typeof initRetentionSchedule === "function") {
+  initRetentionSchedule();
+}
 
 const API_URL = "https://api.openai.com/v1/chat/completions";
 const MODEL   = "gpt-4o-mini";
