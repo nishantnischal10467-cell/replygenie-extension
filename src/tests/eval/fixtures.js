@@ -693,6 +693,64 @@ var EVAL_FIXTURES = [
     },
   },
 
+  // ─────────────────────────────────────────────────────────────────────────
+  // PHASE 6: QUALITY & GENERICITY GATE EVALUATION FIXTURES
+  // ─────────────────────────────────────────────────────────────────────────
+
+  {
+    id: "quality_genericity_reject_001",
+    category: "quality_gate_eval",
+    tweet: {
+      text: "Building an audience before you build a product is the highest leverage move.",
+      handle: "@growthguru",
+      displayName: "Growth Guru",
+    },
+    candidateReply: "Great insights here, thanks for sharing! Thoughts?",
+    expected: {
+      injectionFlagged: false,
+      templateMatch: null,
+      broadCategory: "marketing",
+      expectedPassed: false,
+      expectedFailureTags: ["GENERIC", "FORCED_QUESTION"],
+    },
+  },
+
+  {
+    id: "quality_genericity_reject_002",
+    category: "quality_gate_eval",
+    tweet: {
+      text: "Code reviews should focus on design and correctness, not style arguments.",
+      handle: "@techlead",
+      displayName: "Tech Lead",
+    },
+    candidateReply: "Couldn't agree more with this perspective. So true!",
+    expected: {
+      injectionFlagged: false,
+      templateMatch: null,
+      broadCategory: null,
+      expectedPassed: false,
+      expectedFailureTags: ["GENERIC"],
+    },
+  },
+
+  {
+    id: "quality_pass_substantive_001",
+    category: "quality_gate_eval",
+    tweet: {
+      text: "We switched from REST to gRPC for internal service communication.",
+      handle: "@backend_eng",
+      displayName: "Backend Eng",
+    },
+    candidateReply: "Protobuf serialization significantly reduces payload overhead, though debugging multiplexed HTTP/2 streams usually requires updating your proxy tooling.",
+    expected: {
+      injectionFlagged: false,
+      templateMatch: null,
+      broadCategory: null,
+      expectedPassed: true,
+      expectedFailureTags: [],
+    },
+  },
+
 ];
 
 if (typeof module !== "undefined" && module.exports) {

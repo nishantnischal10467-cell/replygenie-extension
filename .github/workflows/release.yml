@@ -50,6 +50,8 @@ jobs:
           node --check src/background/router.js
           node --check src/background/adapter.js
           node --check src/background/generator.js
+          # Phase 6 quality evaluator & accuracy gate
+          node --check src/background/evaluator.js
           node --check src/content/content.js
           node --check src/popup/popup.js
           node --check src/options/options.js
@@ -85,6 +87,7 @@ jobs:
             src/background/router.js \
             src/background/adapter.js \
             src/background/generator.js \
+            src/background/evaluator.js \
             src/content/content.js \
             src/content/content.css \
             src/content/pacer.js \

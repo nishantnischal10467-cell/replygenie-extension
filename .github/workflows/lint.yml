@@ -46,6 +46,8 @@ jobs:
           node --check src/background/router.js
           node --check src/background/adapter.js
           node --check src/background/generator.js
+          # Phase 6 quality evaluator & accuracy gate
+          node --check src/background/evaluator.js
           # UI files
           node --check src/content/content.js
           node --check src/popup/popup.js

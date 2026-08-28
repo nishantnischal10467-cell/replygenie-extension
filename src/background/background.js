@@ -18,6 +18,7 @@ importScripts("ranker.js");     // Phase 4: ReplyRanker (performance-aware ranki
 importScripts("router.js");     // Phase 5: Confidence Router (ADAPT / INSPIRE / GENERATE)
 importScripts("adapter.js");    // Phase 5: ReplyAdapter (high-confidence candidate adaptation)
 importScripts("generator.js");  // Phase 5: Two-stage ReplyGenerator (strategy select + generation)
+importScripts("evaluator.js");  // Phase 6: Quality / Accuracy / Genericity Gate (evaluation & regeneration)
 
 if (typeof initRetentionSchedule === "function") {
   initRetentionSchedule();
@@ -648,10 +649,49 @@ async function _runIntelligentReplyEngine(context, profile, apiKey, recentReplie
       );
       _promptVersions.stage2 = genResult.promptVersion;
 
-      // Surface the first candidate (Phase 6 will add multi-candidate UI)
-      _finalReply = genResult.candidates[0] && genResult.candidates[0].text
-        ? genResult.candidates[0].text
-        : null;
+      // ── Phase 6: Quality / Accuracy / Genericity Gate ────────────────
+      const verifiedContext = {
+        sourceText: context.text || "",
+        candidateTexts: _ranked.map((c) => c.reply_text).filter(Boolean),
+        voiceSamples: profile.voiceSamples || [],
+      };
+
+      const evalGateResult = await evaluateCandidates(
+        genResult.candidates,
+        context,
+        profile,
+        recentReplies,
+        verifiedContext,
+        _apiConfig,
+        buildPromptContext,
+        async function regenerateFn(failureReasons) {
+          const retryStrategy = Object.assign({}, strategyResult, {
+            angle: (strategyResult.angle || "") + " (Avoid prior failure modes: " + failureReasons.join(", ") + ")",
+          });
+          return await generateCandidates(
+            context,
+            retryStrategy,
+            _analysis,
+            _ranked,
+            recentReplies,
+            profile,
+            _apiConfig,
+            lengthCfg,
+            buildPromptContext,
+            inspirationCandidate
+          );
+        }
+      );
+
+      _finalReply = evalGateResult.text || null;
+      if (evalGateResult.evalResult) {
+        _promptVersions.evaluator = evalGateResult.evalResult.promptVersion || "evaluator-v1.0.0";
+      }
+      if (evalGateResult.queuedForReview) {
+        _decisionPath += ":queued_for_human_review";
+      } else if (evalGateResult.regenerated) {
+        _decisionPath += ":regenerated_and_passed";
+      }
     }
   } catch (genErr) {
     console.warn("[ReplyGenie] Intelligent generation error — falling back to classic:", genErr);

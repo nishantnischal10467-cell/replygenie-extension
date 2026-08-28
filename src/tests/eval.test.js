@@ -186,3 +186,28 @@ describe("Eval set — Phase 4 ranking boundaries and tradeoffs", () => {
   });
 });
 
+// ── Phase 6: Quality Gate & Genericity Evaluation Suite ───────────────────────
+
+const { heuristicScreen } = require("../../src/background/evaluator");
+
+describe("Eval set — Phase 6 quality and genericity screening", () => {
+  const qualityFixtures = EVAL_FIXTURES.filter(f => f.category === "quality_gate_eval");
+
+  test("quality fixtures match expected pass/fail and failure tags", () => {
+    for (const f of qualityFixtures) {
+      const screen = heuristicScreen(
+        f.candidateReply,
+        f.tweet.text,
+        [],
+        { sourceText: f.tweet.text }
+      );
+      const passed = screen.failureTags.length === 0;
+      expect(passed).toBe(f.expected.expectedPassed);
+      f.expected.expectedFailureTags.forEach(tag => {
+        expect(screen.failureTags).toContain(tag);
+      });
+    }
+  });
+});
+
+
