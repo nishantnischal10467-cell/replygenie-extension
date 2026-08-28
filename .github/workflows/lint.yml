@@ -42,6 +42,10 @@ jobs:
           node --check src/content/pacer.js
           # Phase 4 performance-aware ranker
           node --check src/background/ranker.js
+          # Phase 5 confidence routing, adapter, two-stage generator
+          node --check src/background/router.js
+          node --check src/background/adapter.js
+          node --check src/background/generator.js
           # UI files
           node --check src/content/content.js
           node --check src/popup/popup.js

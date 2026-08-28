@@ -1,4 +1,4 @@
-﻿// src/background/flags.js
+// src/background/flags.js
 // Feature flag infrastructure — ALL flags default to OFF.
 // Override via chrome.storage.sync key "featureFlags": { "FLAG_NAME": true }.
 // Never hardcode true here; use storage overrides for controlled rollout.
@@ -12,7 +12,8 @@ var DEFAULT_FLAGS = {
   ENABLE_DECISION_LOGGING:     false, // Structured per-reply decision-trace logging
   ENABLE_PROMPT_ISOLATION:     false, // Untrusted-input isolation in LLM prompts
 
-  // Phase 3+ — DO NOT enable until Phase 3 implementation is complete.
+  // Phase 3+ — full pipeline (PostAnalyzer → embed → retrieve → rank → route → adapt/generate).
+  // OFF by default. Enable ONLY after Phase 5 integration is verified end-to-end.
   ENABLE_INTELLIGENT_REPLY_ENGINE: false,
 };
 

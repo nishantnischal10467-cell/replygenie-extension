@@ -15,6 +15,9 @@ importScripts("analyzer.js");   // PostAnalyzer
 importScripts("retriever.js");  // ReplyRetriever
 importScripts("pacer.js");      // X-side PacingEngine
 importScripts("ranker.js");     // Phase 4: ReplyRanker (performance-aware ranking)
+importScripts("router.js");     // Phase 5: Confidence Router (ADAPT / INSPIRE / GENERATE)
+importScripts("adapter.js");    // Phase 5: ReplyAdapter (high-confidence candidate adaptation)
+importScripts("generator.js");  // Phase 5: Two-stage ReplyGenerator (strategy select + generation)
 
 if (typeof initRetentionSchedule === "function") {
   initRetentionSchedule();
@@ -430,6 +433,18 @@ async function generateReply(context) {
   const recentReplies = await getRecentReplies();
   const angle         = await pickAngle();
 
+  // ── Phase 5: Intelligent Reply Engine (flag-gated) ─────────────────────
+  // When ENABLE_INTELLIGENT_REPLY_ENGINE is true, runs the full Phase 3-5
+  // pipeline: PostAnalyzer → embed → retrieve → rank → route → adapt/generate.
+  // When false (default), execution falls through to the existing single-call
+  // generator below — byte-for-byte identical to pre-Phase-3 behaviour.
+
+  if (_flags.ENABLE_INTELLIGENT_REPLY_ENGINE) {
+    return await _runIntelligentReplyEngine(
+      context, profile, apiKey, recentReplies, lengthCfg, _flags, _t0
+    );
+  }
+
   // Prompt isolation — flag-gated. When ENABLE_PROMPT_ISOLATION is false,
   // buildUserMessage() is used unchanged (identical to pre-Phase-1).
   let _userMessage;
@@ -531,6 +546,151 @@ async function generateReply(context) {
 
   saveRecentReply(reply).catch(() => {}); // fire-and-forget, non-critical
   return reply;
+}
+
+// ── Phase 5: Intelligent Reply Engine orchestrator ────────────────────────────
+//
+// Runs the full Phases 3-5 pipeline:
+//   PostAnalyzer → embed → retrieve → rank → route (ADAPT/INSPIRE/GENERATE)
+//
+// Called only when ENABLE_INTELLIGENT_REPLY_ENGINE flag is true.
+// Any error here falls back to the classic single-call generator rather than
+// crashing — the user always gets a reply.
+
+async function _runIntelligentReplyEngine(context, profile, apiKey, recentReplies, lengthCfg, flags, t0) {
+  const _apiConfig = {
+    apiKey,
+    model:  MODEL,
+    apiUrl: API_URL,
+  };
+
+  let _analysis, _embedding, _candidates, _ranked, _routeResult;
+
+  try {
+    // ── 1. Analyse the source post ──────────────────────────────────────
+    const analyzer = new PostAnalyzer();
+    _analysis = await analyzer.analyze(context, _apiConfig.apiKey);
+
+    // ── 2. Embed + retrieve ─────────────────────────────────────────────
+    _embedding  = generateEmbedding(context.text || "");
+    const db    = await openDatabase();
+    const retriever = new ReplyRetriever({ maxCandidates: 30 });
+    _candidates = await retriever.retrieve(_embedding, _analysis, db);
+
+    // ── 3. Rank candidates ──────────────────────────────────────────────
+    _ranked = rankCandidates(_candidates, _analysis, _candidates);
+
+    // ── 4. Route ────────────────────────────────────────────────────────
+    const recentTexts = recentReplies.slice(-20);
+    _routeResult = routeCandidate(
+      _ranked.length > 0 ? _ranked[0] : null,
+      _analysis,
+      recentTexts
+    );
+  } catch (pipelineErr) {
+    console.warn("[ReplyGenie] Phase 3-4 pipeline error — falling back to classic generation:", pipelineErr);
+    // Fall back to the classic single-call path
+    return _runClassicGeneration(context, profile, apiKey, recentReplies, lengthCfg, flags, t0);
+  }
+
+  let _finalReply;
+  let _decisionPath = "intelligent:" + (_routeResult.route || ROUTE.GENERATE);
+  let _strategyId   = null;
+  let _promptVersions = {};
+
+  try {
+    // ── 5a. ADAPT path ──────────────────────────────────────────────────
+    if (_routeResult.route === ROUTE.ADAPT) {
+      const adaptResult = await adaptReply(
+        context,
+        _routeResult.candidateUsed,
+        _analysis,
+        profile,
+        _apiConfig,
+        buildPromptContext,
+        getLengthConfig
+      );
+
+      if (adaptResult.adapted && adaptResult.text) {
+        _finalReply = adaptResult.text;
+        _strategyId = _routeResult.candidateUsed.reply_strategy;
+        _promptVersions.adapter = adaptResult.promptVersion;
+      } else {
+        // Adapter refused — fall to INSPIRE path
+        console.info("[ReplyGenie] Adapter refused (", adaptResult.refusalReason, ") — falling to INSPIRE");
+        _routeResult.route = ROUTE.INSPIRE;
+        _decisionPath      = "intelligent:inspire:adapter_refused";
+      }
+    }
+
+    // ── 5b. INSPIRE or (adapter fell to INSPIRE) ────────────────────────
+    if (!_finalReply) {
+      const strategyResult = await selectStrategy(
+        context, _analysis, _ranked, _apiConfig, buildPromptContext
+      );
+      _strategyId = strategyResult.strategy_id;
+      _promptVersions.stage1 = strategyResult.promptVersion;
+
+      const inspirationCandidate = (_routeResult.route === ROUTE.INSPIRE)
+        ? _routeResult.candidateUsed : null;
+
+      const genResult = await generateCandidates(
+        context,
+        strategyResult,
+        _analysis,
+        _ranked,
+        recentReplies,
+        profile,
+        _apiConfig,
+        lengthCfg,
+        buildPromptContext,
+        inspirationCandidate
+      );
+      _promptVersions.stage2 = genResult.promptVersion;
+
+      // Surface the first candidate (Phase 6 will add multi-candidate UI)
+      _finalReply = genResult.candidates[0] && genResult.candidates[0].text
+        ? genResult.candidates[0].text
+        : null;
+    }
+  } catch (genErr) {
+    console.warn("[ReplyGenie] Intelligent generation error — falling back to classic:", genErr);
+    return _runClassicGeneration(context, profile, apiKey, recentReplies, lengthCfg, flags, t0);
+  }
+
+  if (!_finalReply) {
+    return _runClassicGeneration(context, profile, apiKey, recentReplies, lengthCfg, flags, t0);
+  }
+
+  const _reply = stripBannedOpener(_finalReply.trim());
+
+  if (flags.ENABLE_RATE_GOVERNOR) recordGovernorEvent().catch(() => {});
+
+  if (flags.ENABLE_DECISION_LOGGING) {
+    logTrace({
+      source_post_id:    makeSourcePostId(context),
+      decision_path:     _decisionPath,
+      model_version:     MODEL,
+      outcome:           "success",
+      latency_ms:        Date.now() - t0,
+      injection_flagged: false,
+      extra: {
+        route:           _routeResult.route,
+        strategy:        _strategyId,
+        guards:          _routeResult.guardsTriggered,
+        prompt_versions: _promptVersions,
+      },
+    }).catch(() => {});
+  }
+
+  saveRecentReply(_reply).catch(() => {});
+  return _reply;
+}
+
+// Thin wrapper to re-run classic single-call path when intelligent engine falls back.
+async function _runClassicGeneration(context, profile, apiKey, recentReplies, lengthCfg, flags, t0) {
+  const flags2 = Object.assign({}, flags, { ENABLE_INTELLIGENT_REPLY_ENGINE: false });
+  return generateReply(context); // Re-enters generateReply which will skip Phase 5 block
 }
 
 // ---------- Post-processing ----------
