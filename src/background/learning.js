@@ -206,7 +206,7 @@ function extractConceptFeatures(text) {
   var sentences = trimmed.split(/[.!?\n]+/).filter(function (s) { return s.trim().length > 0; });
   var sentenceCount = Math.max(1, sentences.length);
 
-  var hasNumbers = /\b\d+(?:[.,]\d+)?\b/.test(trimmed);
+  var hasNumbers = /\d+/.test(trimmed);
   var hasPersonalExp = /\b(i|my|we|our|me|us)\b/i.test(trimmed);
   var hasQuestion = /\?/.test(trimmed);
 

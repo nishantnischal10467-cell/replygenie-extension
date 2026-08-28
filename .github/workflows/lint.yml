@@ -50,6 +50,8 @@ jobs:
           node --check src/background/evaluator.js
           # Phase 8 voice profiler
           node --check src/background/profiler.js
+          # Phase 9 learning loop & pattern miner
+          node --check src/background/learning.js
           # UI files
           node --check src/content/content.js
           node --check src/popup/popup.js
