@@ -32,13 +32,25 @@ const MODEL   = "gpt-4o-mini";
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === "GENERATE_REPLY") {
     generateReply(message.context)
-      .then((reply) => sendResponse({ reply }))
+      .then((res) => {
+        if (typeof res === "object" && res !== null && res.reply) {
+          sendResponse({ reply: res.reply, meta: res.meta });
+        } else {
+          sendResponse({ reply: res, meta: null });
+        }
+      })
       .catch((err) => sendResponse({ error: err.message || String(err) }));
     return true; // Keep channel open for async sendResponse
   }
   if (message.type === "LEARN_FROM_REPLY") {
     learnFromReply(message.replyText)
       .then(() => sendResponse({ ok: true }))
+      .catch((err) => sendResponse({ error: err.message || String(err) }));
+    return true;
+  }
+  if (message.type === "RECORD_MANUAL_REJECTION") {
+    recordManualRejection(message.rejection)
+      .then((rec) => sendResponse({ ok: true, record: rec }))
       .catch((err) => sendResponse({ error: err.message || String(err) }));
     return true;
   }
@@ -55,8 +67,14 @@ chrome.runtime.onConnect.addListener((port) => {
   port.onMessage.addListener(async (message) => {
     if (message.type === "GENERATE_REPLY") {
       try {
-        const reply = await generateReply(message.context);
-        if (!disconnected) port.postMessage({ reply });
+        const res = await generateReply(message.context);
+        if (!disconnected) {
+          if (typeof res === "object" && res !== null && res.reply) {
+            port.postMessage({ reply: res.reply, meta: res.meta });
+          } else {
+            port.postMessage({ reply: res, meta: null });
+          }
+        }
       } catch (err) {
         console.error("[ReplyGenie] generateReply failed:", err);
         if (!disconnected) port.postMessage({ error: err.message || String(err) });
@@ -66,6 +84,14 @@ chrome.runtime.onConnect.addListener((port) => {
       try {
         await learnFromReply(message.replyText);
         if (!disconnected) port.postMessage({ ok: true });
+      } catch (err) {
+        if (!disconnected) port.postMessage({ error: err.message || String(err) });
+      }
+    }
+    if (message.type === "RECORD_MANUAL_REJECTION") {
+      try {
+        const rec = await recordManualRejection(message.rejection);
+        if (!disconnected) port.postMessage({ ok: true, record: rec });
       } catch (err) {
         if (!disconnected) port.postMessage({ error: err.message || String(err) });
       }
@@ -724,7 +750,19 @@ async function _runIntelligentReplyEngine(context, profile, apiKey, recentReplie
   }
 
   saveRecentReply(_reply).catch(() => {});
-  return _reply;
+  return {
+    reply: _reply,
+    meta: {
+      decisionPath: _decisionPath,
+      strategy: _strategyId,
+      scores: (typeof evalGateResult !== "undefined" && evalGateResult && evalGateResult.evalResult) ? evalGateResult.evalResult.scores : null,
+      compositeScore: (typeof evalGateResult !== "undefined" && evalGateResult && evalGateResult.evalResult) ? evalGateResult.evalResult.composite : null,
+      promptVersions: _promptVersions,
+      guardsTriggered: _routeResult ? _routeResult.guardsTriggered : [],
+      requireHumanApproval: flags.REQUIRE_HUMAN_APPROVAL !== false,
+      sourcePostId: makeSourcePostId(context),
+    },
+  };
 }
 
 // Thin wrapper to re-run classic single-call path when intelligent engine falls back.

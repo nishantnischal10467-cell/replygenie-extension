@@ -15,6 +15,10 @@ var DEFAULT_FLAGS = {
   // Phase 3+ — full pipeline (PostAnalyzer → embed → retrieve → rank → route → adapt/generate).
   // OFF by default. Enable ONLY after Phase 5 integration is verified end-to-end.
   ENABLE_INTELLIGENT_REPLY_ENGINE: false,
+
+  // Phase 7 — Human review checkpoint (one-click approve / quick-edit / reject before posting to X).
+  // Default TRUE per Phase 7 specification.
+  REQUIRE_HUMAN_APPROVAL: true,
 };
 
 /**

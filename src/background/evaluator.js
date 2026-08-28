@@ -992,6 +992,57 @@ function _queueForHumanReview(context, bestResult, failureReasons, allResults) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// Manual Rejection Recording (Phase 7 / Phase 9 training signal)
+// ─────────────────────────────────────────────────────────────────────────────
+
+var MANUAL_REJECTIONS_KEY = "manualRejections";
+
+/**
+ * Records a manual user rejection with failure taxonomy tag for Phase 9 training signal.
+ * @param {Object} rejection - { source_post_id, reply_text, failure_tag, strategy, notes, scores }
+ * @returns {Promise<Object>} recorded record
+ */
+function recordManualRejection(rejection) {
+  return new Promise(function(resolve) {
+    if (!rejection) return resolve(null);
+    var tag = rejection.failure_tag || FAILURE_TAGS.GENERIC;
+    if (!Object.values(FAILURE_TAGS).includes(tag)) {
+      tag = FAILURE_TAGS.GENERIC;
+    }
+    var record = {
+      id: "rej_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7),
+      rejected_at: new Date().toISOString(),
+      source_post_id: rejection.source_post_id || "unknown",
+      reply_text: rejection.reply_text || "",
+      failure_tag: tag,
+      strategy: rejection.strategy || null,
+      scores: rejection.scores || null,
+      notes: rejection.notes || null,
+    };
+
+    try {
+      if (typeof chrome !== "undefined" && chrome.storage && chrome.storage.local) {
+        chrome.storage.local.get({ [MANUAL_REJECTIONS_KEY]: [] }, function(data) {
+          var list = Array.isArray(data[MANUAL_REJECTIONS_KEY]) ? data[MANUAL_REJECTIONS_KEY] : [];
+          list.push(record);
+          var trimmed = list.slice(-200); // Keep last 200 rejections for Phase 9
+          var update = {};
+          update[MANUAL_REJECTIONS_KEY] = trimmed;
+          chrome.storage.local.set(update, function() {
+            resolve(record);
+          });
+        });
+      } else {
+        resolve(record);
+      }
+    } catch (_) {
+      resolve(record);
+    }
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Exports
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -1016,7 +1067,9 @@ if (typeof module !== "undefined" && module.exports) {
     computeCompositeScore,
     evaluateCandidate,
     evaluateCandidates,
+    recordManualRejection,
     EVALUATOR_SYSTEM_PROMPT,
     HUMAN_REVIEW_QUEUE_KEY,
+    MANUAL_REJECTIONS_KEY,
   };
 }

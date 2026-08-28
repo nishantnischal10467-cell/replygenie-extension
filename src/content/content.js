@@ -138,20 +138,44 @@ function showCard(anchorBtn, state) {
     card.innerHTML = `
       <div class="rg-card-header">
         <span>Couldn't generate a reply</span>
-        <button class="rg-close">×</button>
+        <button class="rg-close" title="Close">×</button>
       </div>
       <div class="rg-error">${escapeHtml(state.message)}</div>
     `;
   } else if (state.status === "done") {
+    const meta = state.meta || {};
+    const strategyName = meta.strategy ? meta.strategy.replace(/_/g, " ") : null;
+    const scoreVal = meta.compositeScore != null ? Number(meta.compositeScore).toFixed(1) : null;
+
     card.innerHTML = `
       <div class="rg-card-header">
-        <span>${state.copied ? "Copied to clipboard ✓" : "Suggested reply"}</span>
-        <button class="rg-close">×</button>
+        <span>${state.copied ? "Copied to clipboard ✓" : "Review Checkpoint"}</span>
+        <button class="rg-close" title="Close">×</button>
       </div>
-      <textarea class="rg-textarea">${escapeHtml(state.reply)}</textarea>
+      ${strategyName || scoreVal ? `
+        <div class="rg-meta-bar">
+          ${strategyName ? `<span class="rg-badge rg-badge-strategy" title="Reply Strategy">${escapeHtml(strategyName)}</span>` : ""}
+          ${scoreVal ? `<span class="rg-badge rg-badge-score" title="Quality Score">${scoreVal}/10</span>` : ""}
+        </div>
+      ` : ""}
+      <textarea class="rg-textarea" placeholder="Edit reply before approving...">${escapeHtml(state.reply)}</textarea>
       <div class="rg-card-footer">
-        <button class="rg-regen">Regenerate</button>
-        <button class="rg-copy">Copy</button>
+        <button class="rg-reject" title="Reject with feedback">Reject</button>
+        <button class="rg-regen" title="Generate another reply">Regen</button>
+        <button class="rg-approve rg-copy" title="Approve and copy reply">${state.copied ? "Approved ✓" : "Approve"}</button>
+      </div>
+      <div class="rg-reject-panel" style="display: none;">
+        <div class="rg-reject-title">Reason for rejection:</div>
+        <div class="rg-reject-tags">
+          <button class="rg-tag-btn" data-tag="GENERIC">Generic</button>
+          <button class="rg-tag-btn" data-tag="UNSUPPORTED_CLAIM">Unsupported Claim</button>
+          <button class="rg-tag-btn" data-tag="FORCED_QUESTION">Forced Question</button>
+          <button class="rg-tag-btn" data-tag="REPETITIVE">Repetitive</button>
+          <button class="rg-tag-btn" data-tag="TOO_AGREEABLE">Too Agreeable</button>
+          <button class="rg-tag-btn" data-tag="OFF_TOPIC">Off Topic</button>
+          <button class="rg-tag-btn" data-tag="LOW_RELEVANCE">Low Relevance</button>
+          <button class="rg-tag-btn" data-tag="OBVIOUS_AI">Obvious AI</button>
+        </div>
       </div>
     `;
   }
@@ -166,9 +190,13 @@ function showCard(anchorBtn, state) {
   if (copyBtn) {
     copyBtn.addEventListener("click", () => {
       const ta = card.querySelector(".rg-textarea");
-      copyToClipboard(ta.value);
-      copyBtn.textContent = "Copied!";
-      setTimeout(() => (copyBtn.textContent = "Copy"), 1200);
+      const textToApprove = ta ? ta.value : state.reply;
+      copyToClipboard(textToApprove);
+      copyBtn.textContent = "Approved ✓";
+      copyBtn.classList.add("rg-approved");
+      setTimeout(() => {
+        removeCard();
+      }, 700);
     });
   }
 
@@ -176,6 +204,42 @@ function showCard(anchorBtn, state) {
   if (regenBtn) {
     regenBtn.addEventListener("click", () => {
       handleSuggestClick(state.article, anchorBtn, true);
+    });
+  }
+
+  const rejectBtn = card.querySelector(".rg-reject");
+  const rejectPanel = card.querySelector(".rg-reject-panel");
+  if (rejectBtn && rejectPanel) {
+    rejectBtn.addEventListener("click", () => {
+      const isVisible = rejectPanel.style.display !== "none";
+      rejectPanel.style.display = isVisible ? "none" : "block";
+      rejectBtn.classList.toggle("rg-reject-active", !isVisible);
+    });
+
+    const tagBtns = rejectPanel.querySelectorAll(".rg-tag-btn");
+    tagBtns.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const tag = btn.getAttribute("data-tag") || "GENERIC";
+        const ta = card.querySelector(".rg-textarea");
+        const replyText = ta ? ta.value : state.reply;
+        const meta = state.meta || {};
+
+        sendExtensionMessage({
+          type: "RECORD_MANUAL_REJECTION",
+          rejection: {
+            source_post_id: meta.sourcePostId || (state.context ? state.context.text.slice(0, 80) : "unknown"),
+            reply_text: replyText,
+            failure_tag: tag,
+            strategy: meta.strategy || null,
+            scores: meta.scores || null,
+          },
+        }).catch(() => {});
+
+        rejectPanel.innerHTML = `<div class="rg-feedback-saved">Feedback recorded (${tag}) ✓</div>`;
+        setTimeout(() => {
+          removeCard();
+        }, 800);
+      });
     });
   }
 
@@ -296,14 +360,27 @@ async function handleSuggestClick(article, btn) {
   try {
     const res = await sendExtensionMessage({ type: "GENERATE_REPLY", context: ctx });
     _inFlight.delete(article);
+    const replyText = (typeof res === "object" && res !== null && res.reply) ? res.reply : res;
+    const meta = (typeof res === "object" && res !== null && res.meta) ? res.meta : null;
+
     chrome.storage.sync.get({ profile: { autoCopy: true } }, (data) => {
       const autoCopy = data.profile ? data.profile.autoCopy !== false : true;
-      if (autoCopy) copyToClipboard(res.reply);
-      showCard(btn, { status: "done", reply: res.reply, copied: autoCopy, article });
+      const requiresApproval = meta ? meta.requireHumanApproval !== false : false;
+      if (autoCopy && !requiresApproval) {
+        copyToClipboard(replyText);
+      }
+      showCard(btn, {
+        status: "done",
+        reply: replyText,
+        meta: meta,
+        copied: autoCopy && !requiresApproval,
+        article,
+        context: ctx,
+      });
     });
   } catch (err) {
     _inFlight.delete(article);
-    showCard(btn, { status: "error", message: err.message || String(err), article });
+    showCard(btn, { status: "error", message: err.message || String(err), article, context: ctx });
     startCooldown(btn);
   }
 }

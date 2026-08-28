@@ -391,6 +391,38 @@ describe("evaluateCandidates Orchestrator", () => {
   };
   const mockContext = { text: "We optimized our SQL queries." };
 
+  let originalFetch;
+  beforeAll(() => {
+    originalFetch = global.fetch;
+    global.fetch = jest.fn(async () => ({
+      ok: true,
+      json: async () => ({
+        choices: [
+          {
+            message: {
+              content: JSON.stringify({
+                relevance: 9,
+                specificity: 8,
+                originality: 8,
+                human_likeness: 8,
+                accuracy: 9,
+                voice_match: 8,
+                conversation_value: 8,
+                genericity: 2,
+                question_necessity: 5,
+                rejection_reasons: [],
+              }),
+            },
+          },
+        ],
+      }),
+    }));
+  });
+
+  afterAll(() => {
+    global.fetch = originalFetch;
+  });
+
   test("selects passing candidate on first pass without regeneration", async () => {
     const candidates = [
       { text: "Great insights! Thoughts?" }, // Fails generic + forced question
