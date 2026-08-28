@@ -56,6 +56,8 @@ jobs:
           node --check src/background/profiler.js
           # Phase 9 learning loop & pattern miner
           node --check src/background/learning.js
+          # Phase 10 analytics dashboard data layer
+          node --check src/background/analytics.js
           node --check src/content/content.js
           node --check src/popup/popup.js
           node --check src/options/options.js
@@ -94,6 +96,7 @@ jobs:
             src/background/evaluator.js \
             src/background/profiler.js \
             src/background/learning.js \
+            src/background/analytics.js \
             src/content/content.js \
             src/content/content.css \
             src/content/pacer.js \

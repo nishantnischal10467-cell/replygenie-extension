@@ -21,6 +21,7 @@ importScripts("generator.js");  // Phase 5: Two-stage ReplyGenerator (strategy s
 importScripts("evaluator.js");  // Phase 6: Quality / Accuracy / Genericity Gate (evaluation & regeneration)
 importScripts("profiler.js");   // Phase 8: Voice Profiler (style signals, versioned voice profiles)
 importScripts("learning.js");   // Phase 9: Performance Collection & Learning Loop (mining & weight proposals)
+importScripts("analytics.js");  // Phase 10: Analytics Dashboard Data Layer (QCR, rates, rankings)
 
 if (typeof initRetentionSchedule === "function") {
   initRetentionSchedule();
@@ -53,6 +54,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === "RECORD_MANUAL_REJECTION") {
     recordManualRejection(message.rejection)
       .then((rec) => sendResponse({ ok: true, record: rec }))
+      .catch((err) => sendResponse({ error: err.message || String(err) }));
+    return true;
+  }
+  if (message.type === "GET_ANALYTICS_DASHBOARD") {
+    queryFullAnalyticsSuite()
+      .then((data) => sendResponse({ ok: true, data: data }))
       .catch((err) => sendResponse({ error: err.message || String(err) }));
     return true;
   }
@@ -94,6 +101,14 @@ chrome.runtime.onConnect.addListener((port) => {
       try {
         const rec = await recordManualRejection(message.rejection);
         if (!disconnected) port.postMessage({ ok: true, record: rec });
+      } catch (err) {
+        if (!disconnected) port.postMessage({ error: err.message || String(err) });
+      }
+    }
+    if (message.type === "GET_ANALYTICS_DASHBOARD") {
+      try {
+        const data = await queryFullAnalyticsSuite();
+        if (!disconnected) port.postMessage({ ok: true, data: data });
       } catch (err) {
         if (!disconnected) port.postMessage({ error: err.message || String(err) });
       }

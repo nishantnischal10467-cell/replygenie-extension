@@ -52,6 +52,8 @@ jobs:
           node --check src/background/profiler.js
           # Phase 9 learning loop & pattern miner
           node --check src/background/learning.js
+          # Phase 10 analytics dashboard data layer
+          node --check src/background/analytics.js
           # UI files
           node --check src/content/content.js
           node --check src/popup/popup.js
