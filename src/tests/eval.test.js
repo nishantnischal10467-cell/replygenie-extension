@@ -158,3 +158,31 @@ describe("Eval set — buildPromptContext structure", () => {
     }
   });
 });
+
+// ── Phase 4: Ranking & Threshold Evaluation Suite ─────────────────────────────
+
+const { classifyPerformance, rankCandidates } = require("../../src/background/ranker");
+
+describe("Eval set — Phase 4 ranking boundaries and tradeoffs", () => {
+  const rankingBoundaryFixtures = EVAL_FIXTURES.filter(f => f.category === "ranking_eval" && f.rankingData);
+  const rankingTradeoffFixtures = EVAL_FIXTURES.filter(f => f.category === "ranking_eval" && f.candidates);
+
+  test("boundary fixtures match expected performance classes (499/500/9999/10000)", () => {
+    for (const f of rankingBoundaryFixtures) {
+      const actualClass = classifyPerformance(f.rankingData.impressions);
+      expect(actualClass).toBe(f.expected.expectedPerformanceClass);
+    }
+  });
+
+  test("tradeoff fixtures confirm high-relevance/low-perf ranks above low-relevance/high-perf", () => {
+    for (const f of rankingTradeoffFixtures) {
+      const ranked = rankCandidates(
+        f.candidates,
+        { topic: "engineering" },
+        f.candidates,
+      );
+      expect(ranked[0].id).toBe(f.expected.expectedTopCandidateId);
+    }
+  });
+});
+
