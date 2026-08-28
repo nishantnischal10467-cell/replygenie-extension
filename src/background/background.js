@@ -19,6 +19,8 @@ importScripts("router.js");     // Phase 5: Confidence Router (ADAPT / INSPIRE /
 importScripts("adapter.js");    // Phase 5: ReplyAdapter (high-confidence candidate adaptation)
 importScripts("generator.js");  // Phase 5: Two-stage ReplyGenerator (strategy select + generation)
 importScripts("evaluator.js");  // Phase 6: Quality / Accuracy / Genericity Gate (evaluation & regeneration)
+importScripts("profiler.js");   // Phase 8: Voice Profiler (style signals, versioned voice profiles)
+importScripts("learning.js");   // Phase 9: Performance Collection & Learning Loop (mining & weight proposals)
 
 if (typeof initRetentionSchedule === "function") {
   initRetentionSchedule();
@@ -139,6 +141,38 @@ async function saveRecentReply(reply) {
   await new Promise((resolve) => {
     chrome.storage.local.set({ recentReplies: trimmed }, resolve);
   });
+}
+
+// ---------- Learn from manual user replies (Phase 8 Voice Profiling) ----------
+
+async function learnFromReply(replyText) {
+  if (!replyText || typeof replyText !== "string" || replyText.trim().length === 0) return;
+  const trimmed = replyText.trim();
+
+  // Update voice samples in profile
+  const profile = await getProfile();
+  const currentSamples = profile.voiceSamples || [];
+  const updatedSamples = currentSamples.concat(trimmed).slice(-20);
+  await saveProfile({ voiceSamples: updatedSamples });
+
+  // Store in IndexedDB and refresh voice profile
+  try {
+    await openDatabase();
+    if (typeof repliesRepo !== "undefined" && repliesRepo.insertReply) {
+      await repliesRepo.insertReply({
+        source_post_id: "manual_reply_" + Date.now(),
+        reply_text: trimmed,
+        is_human_written: 1,
+        is_ai_generated: 0,
+        performance_class: "baseline",
+      });
+    }
+    if (typeof syncVoiceProfileFromDatabase === "function") {
+      await syncVoiceProfileFromDatabase();
+    }
+  } catch (err) {
+    console.warn("[ReplyGenie] learnFromReply database update failed:", err.message);
+  }
 }
 
 // ---------- Reply angle rotation ----------
@@ -625,6 +659,22 @@ async function _runIntelligentReplyEngine(context, profile, apiKey, recentReplie
   let _strategyId   = null;
   let _promptVersions = {};
 
+  // Phase 8: Load active voice profile
+  let _activeVoiceProfile = null;
+  try {
+    if (typeof voiceProfilesRepo !== "undefined" && voiceProfilesRepo.getActiveVoiceProfile) {
+      _activeVoiceProfile = await voiceProfilesRepo.getActiveVoiceProfile();
+    }
+  } catch (_) {}
+
+  if (_activeVoiceProfile) {
+    _promptVersions.voice_profile = "vp_v" + _activeVoiceProfile.version;
+  }
+
+  const profileWithVoice = Object.assign({}, profile, {
+    activeVoiceProfile: _activeVoiceProfile,
+  });
+
   try {
     // ── 5a. ADAPT path ──────────────────────────────────────────────────
     if (_routeResult.route === ROUTE.ADAPT) {
@@ -632,7 +682,7 @@ async function _runIntelligentReplyEngine(context, profile, apiKey, recentReplie
         context,
         _routeResult.candidateUsed,
         _analysis,
-        profile,
+        profileWithVoice,
         _apiConfig,
         buildPromptContext,
         getLengthConfig
@@ -667,7 +717,7 @@ async function _runIntelligentReplyEngine(context, profile, apiKey, recentReplie
         _analysis,
         _ranked,
         recentReplies,
-        profile,
+        profileWithVoice,
         _apiConfig,
         lengthCfg,
         buildPromptContext,
@@ -685,7 +735,7 @@ async function _runIntelligentReplyEngine(context, profile, apiKey, recentReplie
       const evalGateResult = await evaluateCandidates(
         genResult.candidates,
         context,
-        profile,
+        profileWithVoice,
         recentReplies,
         verifiedContext,
         _apiConfig,

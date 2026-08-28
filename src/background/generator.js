@@ -290,6 +290,15 @@ function buildStage2SystemPrompt(profile, strategyResult, rankedCandidates, rece
   if (profile.mentionWhenRelevant) lines.push("Mention when relevant: " + profile.mentionWhenRelevant);
   if (profile.neverMention)        lines.push("NEVER mention: " + profile.neverMention);
 
+  // Phase 8 Learned Voice Profile Directives
+  if (profile.activeVoiceProfile && typeof formatVoiceProfileForPrompt === "function") {
+    var formattedProfile = formatVoiceProfileForPrompt(profile.activeVoiceProfile);
+    if (formattedProfile) {
+      lines.push("");
+      lines.push(formattedProfile);
+    }
+  }
+
   // Voice samples (positive examples)
   var voiceSamples = (profile.voiceSamples || []).slice(-8);
   if (voiceSamples.length > 0) {
