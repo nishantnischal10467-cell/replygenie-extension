@@ -40,6 +40,8 @@ jobs:
           node --check src/background/retriever.js
           node --check src/background/pacer.js
           node --check src/content/pacer.js
+          # Phase 4 performance-aware ranker
+          node --check src/background/ranker.js
           # UI files
           node --check src/content/content.js
           node --check src/popup/popup.js

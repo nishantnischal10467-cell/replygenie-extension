@@ -563,6 +563,136 @@ var EVAL_FIXTURES = [
     },
   },
 
+  // ─────────────────────────────────────────────────────────────────────────
+  // PHASE 4: RANKING & THRESHOLD EVALUATION FIXTURES (Boundary & Tradeoff cases)
+  // ─────────────────────────────────────────────────────────────────────────
+
+  {
+    id: "ranking_boundary_outstanding_10000",
+    category: "ranking_eval",
+    tweet: {
+      text: "Our AI workflow just saved 40 hours a week for a team of 10 engineers.",
+      handle: "@aifounder",
+      displayName: "AI Founder",
+    },
+    rankingData: {
+      impressions: 10000,
+      likes: 450,
+      replies: 80,
+      reposts: 120,
+    },
+    expected: {
+      injectionFlagged: false,
+      templateMatch: null,
+      broadCategory: "ai",
+      expectedPerformanceClass: "outstanding",
+    },
+  },
+
+  {
+    id: "ranking_boundary_moderate_9999",
+    category: "ranking_eval",
+    tweet: {
+      text: "Here are 5 lessons from bootstrapping our SaaS to $50k MRR in 12 months.",
+      handle: "@saasbootstrapper",
+      displayName: "SaaS Bootstrapper",
+    },
+    rankingData: {
+      impressions: 9999,
+      likes: 380,
+      replies: 45,
+      reposts: 70,
+    },
+    expected: {
+      injectionFlagged: false,
+      templateMatch: null,
+      broadCategory: "builder",
+      expectedPerformanceClass: "moderate",
+    },
+  },
+
+  {
+    id: "ranking_boundary_moderate_500",
+    category: "ranking_eval",
+    tweet: {
+      text: "Writing clean tests is an investment that pays off every single sprint.",
+      handle: "@clean_coder",
+      displayName: "Clean Coder",
+    },
+    rankingData: {
+      impressions: 500,
+      likes: 25,
+      replies: 4,
+      reposts: 5,
+    },
+    expected: {
+      injectionFlagged: false,
+      templateMatch: null,
+      broadCategory: null,
+      expectedPerformanceClass: "moderate",
+    },
+  },
+
+  {
+    id: "ranking_boundary_baseline_499",
+    category: "ranking_eval",
+    tweet: {
+      text: "Trying out a new mechanical keyboard today, loving the tactile switches.",
+      handle: "@techgeek",
+      displayName: "Tech Geek",
+    },
+    rankingData: {
+      impressions: 499,
+      likes: 12,
+      replies: 1,
+      reposts: 0,
+    },
+    expected: {
+      injectionFlagged: false,
+      templateMatch: null,
+      broadCategory: null,
+      expectedPerformanceClass: "baseline",
+    },
+  },
+
+  {
+    id: "ranking_tradeoff_relevance_vs_performance",
+    category: "ranking_eval",
+    tweet: {
+      text: "What are the most common pitfalls when migrating from monolith to microservices?",
+      handle: "@archlead",
+      displayName: "Architecture Lead",
+    },
+    candidates: [
+      {
+        id: "high_relevance_low_perf",
+        reply_text: "Data consistency across service boundaries and distributed transactions are the biggest traps. Start with modular monolith first.",
+        similarity_score: 0.94,
+        topic: "engineering",
+        impressions: 120, // Baseline performance
+        likes: 5,
+        replies: 1,
+        reposts: 0,
+      },
+      {
+        id: "low_relevance_high_perf",
+        reply_text: "Viral marketing is all about storytelling and hooks!",
+        similarity_score: 0.15,
+        topic: "marketing",
+        impressions: 45000, // Mega-viral outstanding performance
+        likes: 2500,
+        replies: 400,
+        reposts: 800,
+      },
+    ],
+    expected: {
+      injectionFlagged: false,
+      templateMatch: null,
+      broadCategory: null,
+      expectedTopCandidateId: "high_relevance_low_perf", // Relevance must win
+    },
+  },
+
 ];
 
 if (typeof module !== "undefined" && module.exports) {

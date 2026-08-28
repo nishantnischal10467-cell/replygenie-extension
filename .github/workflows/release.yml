@@ -44,6 +44,8 @@ jobs:
           node --check src/background/retriever.js
           node --check src/background/pacer.js
           node --check src/content/pacer.js
+          # Phase 4 performance-aware ranker
+          node --check src/background/ranker.js
           # UI files
           node --check src/content/content.js
           node --check src/popup/popup.js
@@ -76,6 +78,7 @@ jobs:
             src/background/analyzer.js \
             src/background/retriever.js \
             src/background/pacer.js \
+            src/background/ranker.js \
             src/content/content.js \
             src/content/content.css \
             src/content/pacer.js \

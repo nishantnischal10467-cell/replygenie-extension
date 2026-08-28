@@ -14,6 +14,7 @@ importScripts("embeddings.js"); // cosineSimilarity, generateEmbedding
 importScripts("analyzer.js");   // PostAnalyzer
 importScripts("retriever.js");  // ReplyRetriever
 importScripts("pacer.js");      // X-side PacingEngine
+importScripts("ranker.js");     // Phase 4: ReplyRanker (performance-aware ranking)
 
 if (typeof initRetentionSchedule === "function") {
   initRetentionSchedule();
