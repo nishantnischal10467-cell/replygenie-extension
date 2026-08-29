@@ -52,18 +52,18 @@
 
     <!-- Hero Section -->
     <section class="hero">
-      <div class="badge-pill">
+      <div class="badge-pill hero-badge-anim">
         <span class="badge-dot"></span>
         <span>✨ Manifest V3 Chrome Extension • BYO API Key</span>
       </div>
       
-      <h1>AI replies on X, drafted in your authentic voice.</h1>
+      <h1 class="hero-title-anim">AI replies on X, drafted in your authentic voice.</h1>
       
-      <p>
+      <p class="hero-desc-anim">
         Stop staring at empty reply boxes. ReplyGenie analyzes tweet context, learns your writing voice from past posts, and drafts sharp, high-converting replies in 1 click.
       </p>
 
-      <div class="hero-actions">
+      <div class="hero-actions hero-actions-anim">
         <a href="https://github.com/nishantnischal10467-cell/replygenie-extension" class="btn btn-primary" target="_blank">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
           Get on GitHub
@@ -71,14 +71,14 @@
         <a href="#how-it-works" class="btn btn-secondary">Setup Guide</a>
       </div>
 
-      <div class="hero-features-strip">
+      <div class="hero-features-strip hero-strip-anim">
         <span>🔒 BYO OpenAI API Key</span>
         <span>⚡ Zero Server Tracking</span>
         <span>🧠 Local Voice Memory</span>
       </div>
 
       <!-- Live Interactive Demo Window -->
-      <div class="demo-window">
+      <div class="demo-window hero-demo-anim">
         <div class="window-header">
           <div class="window-dots">
             <div class="window-dot"></div>
@@ -105,7 +105,7 @@
               <span>🔁 1.8K</span>
               <span>❤️ 12.4K</span>
             </div>
-            <button class="demo-reply-trigger" id="demo-trigger-btn">
+            <button class="demo-reply-trigger" id="demo-trigger-btn" title="Generate authentic reply">
               <span>✨ Reply</span>
             </button>
           </div>
@@ -132,7 +132,7 @@
             <span class="copy-toast" id="copy-toast">✓ Copied to clipboard</span>
             <div class="action-btns">
               <button class="btn-sm btn-sm-ghost" onclick="regenDemoReply()">Regenerate</button>
-              <button class="btn-sm btn-sm-primary" onclick="copyDemoReply()">Copy Reply</button>
+              <button class="btn-sm btn-sm-primary" id="demo-copy-btn" onclick="copyDemoReply()">Copy Reply</button>
             </div>
           </div>
         </div>
@@ -141,35 +141,35 @@
 
     <!-- Bento Grid Features -->
     <section class="section" id="features">
-      <div class="section-header">
+      <div class="section-header reveal">
         <div class="section-label">Engineered Features</div>
         <h2 class="section-title">Built for meaningful engagement.</h2>
         <p class="section-desc">No generic AI fluff. Every reply uses structured angles and learns your personal voice.</p>
       </div>
 
       <div class="bento-grid">
-        <div class="bento-card span-2">
+        <div class="bento-card span-2 reveal stagger-1">
           <div class="bento-icon">🎯</div>
           <h3>25 Structural Angles & Anti-Fluff Engine</h3>
           <p>Rotates through 25 proven conversation angles — sharp questions, reframes, data insights, and counter-perspectives — ensuring your replies never sound robotic or repetitive.</p>
           <span class="bento-tag">PROMPT_ENGINEERING_V2</span>
         </div>
 
-        <div class="bento-card">
+        <div class="bento-card reveal stagger-2">
           <div class="bento-icon">🧠</div>
           <h3>Local Voice Learning</h3>
           <p>Quietly samples your manual replies on X to adopt your specific vocabulary, sentence structure, and style without sending data to third-party servers.</p>
           <span class="bento-tag">CHROME_STORAGE_LOCAL</span>
         </div>
 
-        <div class="bento-card">
+        <div class="bento-card reveal stagger-3">
           <div class="bento-icon">⚡</div>
           <h3>Template Short-Circuit</h3>
           <p>Instantly suggests quick templates for common interactions (thanks, congrats, agreement) without wasting OpenAI API tokens.</p>
           <span class="bento-tag">ZERO_TOKEN_LATENCY</span>
         </div>
 
-        <div class="bento-card span-2">
+        <div class="bento-card span-2 reveal stagger-4">
           <div class="bento-icon">🔒</div>
           <h3>Client-Side Privacy & BYO Key</h3>
           <p>Your OpenAI API key remains exclusively inside your browser's local sync storage. All completions fire directly to OpenAI's official endpoint with zero middleman server logging.</p>
@@ -180,33 +180,33 @@
 
     <!-- Setup Guide -->
     <section class="section" id="how-it-works">
-      <div class="section-header">
+      <div class="section-header reveal">
         <div class="section-label">Installation</div>
         <h2 class="section-title">Up and running in 2 minutes.</h2>
         <p class="section-desc">Load unpacked directly in Chrome for personal or developer use.</p>
       </div>
 
       <div class="steps-grid">
-        <div class="step-box">
+        <div class="step-box reveal stagger-1">
           <div class="step-num">STEP 01</div>
           <h4>Clone Repository</h4>
           <p>Download or git clone the repo locally to your machine.</p>
           <div class="code-snippet">git clone https://github.com/...</div>
         </div>
 
-        <div class="step-box">
+        <div class="step-box reveal stagger-2">
           <div class="step-num">STEP 02</div>
           <h4>Load Unpacked</h4>
           <p>Open <code>chrome://extensions</code>, toggle Developer Mode, click <strong>Load unpacked</strong>.</p>
         </div>
 
-        <div class="step-box">
+        <div class="step-box reveal stagger-3">
           <div class="step-num">STEP 03</div>
           <h4>Add API Key</h4>
           <p>Open ReplyGenie Options and paste your OpenAI key (starts with <code>sk-proj-</code>).</p>
         </div>
 
-        <div class="step-box">
+        <div class="step-box reveal stagger-4">
           <div class="step-num">STEP 04</div>
           <h4>Start Replying</h4>
           <p>Visit x.com, click ✨ Reply on any post, and paste the auto-copied reply.</p>
@@ -216,23 +216,52 @@
 
     <!-- Security & Privacy FAQ -->
     <section class="section" id="privacy">
-      <div class="section-header">
+      <div class="section-header reveal">
         <div class="section-label">Security & FAQ</div>
         <h2 class="section-title">Frequently Asked Questions</h2>
       </div>
 
       <div class="faq-list">
-        <div class="faq-item">
-          <h4>Does ReplyGenie store my API key on any server?</h4>
-          <p>No. ReplyGenie has zero backend servers. Your key is stored locally in <code>chrome.storage.sync</code> and requests are dispatched straight from your browser to <code>api.openai.com</code>.</p>
+        <div class="faq-item reveal stagger-1">
+          <button class="faq-question" type="button">
+            <span>Does ReplyGenie store my API key on any server?</span>
+            <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          </button>
+          <div class="faq-answer-wrapper">
+            <div class="faq-answer-inner">
+              <div class="faq-answer-content">
+                No. ReplyGenie has zero backend servers. Your key is stored locally in <code>chrome.storage.sync</code> and requests are dispatched straight from your browser to <code>api.openai.com</code>.
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="faq-item">
-          <h4>How does the Voice Learning feature work?</h4>
-          <p>When you post a native reply on X, ReplyGenie listens to the submit event and appends a small sample of your written text to your local profile storage (up to 15 samples) to fine-tune future prompt context.</p>
+
+        <div class="faq-item reveal stagger-2">
+          <button class="faq-question" type="button">
+            <span>How does the Voice Learning feature work?</span>
+            <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          </button>
+          <div class="faq-answer-wrapper">
+            <div class="faq-answer-inner">
+              <div class="faq-answer-content">
+                When you post a native reply on X, ReplyGenie listens to the submit event and appends a small sample of your written text to your local profile storage (up to 15 samples) to fine-tune future prompt context.
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="faq-item">
-          <h4>Is ReplyGenie free and open-source?</h4>
-          <p>Yes. ReplyGenie is 100% open-source under the MIT License. You only pay OpenAI directly for your token usage (fractions of a cent per reply using gpt-4o-mini).</p>
+
+        <div class="faq-item reveal stagger-3">
+          <button class="faq-question" type="button">
+            <span>Is ReplyGenie free and open-source?</span>
+            <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          </button>
+          <div class="faq-answer-wrapper">
+            <div class="faq-answer-inner">
+              <div class="faq-answer-content">
+                Yes. ReplyGenie is 100% open-source under the MIT License. You only pay OpenAI directly for your token usage (fractions of a cent per reply using gpt-4o-mini).
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
