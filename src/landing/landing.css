@@ -342,54 +342,35 @@ nav a:hover::after {
   transform: translateY(1px) scale(0.98);
 }
 
-/* Hero Section */
+/* ==========================================================================
+   HERO SECTION — Two-column dark SaaS layout
+   ========================================================================== */
+
 .hero {
-  text-align: center;
-  padding: 100px 0 70px;
-  max-width: 860px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 64px;
+  padding: 100px 0 80px;
+  max-width: 1140px;
   margin: 0 auto;
+  text-align: left;
 }
 
-.hero-badge-anim {
+/* Left column entrance */
+.hero-text-anim {
   opacity: 0;
-  transform: translateY(16px);
-  animation: heroSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  animation-delay: 0.05s;
+  transform: translateY(24px);
+  animation: heroSlideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: 0.1s;
 }
 
-.hero-title-anim {
+/* Right column entrance — slight delay */
+.hero-visual-anim {
   opacity: 0;
-  transform: translateY(20px);
-  animation: heroSlideUp 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  animation-delay: 0.15s;
-}
-
-.hero-desc-anim {
-  opacity: 0;
-  transform: translateY(20px);
-  animation: heroSlideUp 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  animation-delay: 0.28s;
-}
-
-.hero-actions-anim {
-  opacity: 0;
-  transform: translateY(20px);
-  animation: heroSlideUp 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  animation-delay: 0.40s;
-}
-
-.hero-strip-anim {
-  opacity: 0;
-  transform: translateY(16px);
-  animation: heroSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  animation-delay: 0.52s;
-}
-
-.hero-demo-anim {
-  opacity: 0;
-  transform: translateY(28px);
+  transform: translateY(32px);
   animation: heroSlideUp 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  animation-delay: 0.64s;
+  animation-delay: 0.3s;
 }
 
 @keyframes heroSlideUp {
@@ -399,18 +380,19 @@ nav a:hover::after {
   }
 }
 
+/* Hero badge pill */
 .badge-pill {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 14px;
+  padding: 5px 12px;
   border-radius: var(--radius-full);
   background: var(--bg-card);
-  border: 1px solid var(--border-hairline);
+  border: 1px solid var(--border-subtle);
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  font-size: 0.77rem;
   color: var(--text-secondary);
-  margin-bottom: 28px;
+  margin-bottom: 24px;
   box-shadow: var(--shadow-sm);
   transition: border-color 0.25s ease, transform 0.2s ease;
 }
@@ -425,7 +407,7 @@ nav a:hover::after {
   height: 6px;
   border-radius: 50%;
   background: var(--accent-cyan);
-  box-shadow: 0 0 10px var(--accent-cyan);
+  box-shadow: 0 0 8px var(--accent-cyan);
   animation: pulseDot 2s ease-in-out infinite;
 }
 
@@ -434,74 +416,189 @@ nav a:hover::after {
   50% { transform: scale(1.4); opacity: 0.7; }
 }
 
+/* Hero headline — tight, confident */
 h1 {
-  font-size: 3.75rem;
+  font-size: 3.6rem;
   font-weight: 800;
-  line-height: 1.08;
-  letter-spacing: -0.04em;
-  margin-bottom: 24px;
+  line-height: 1.06;
+  letter-spacing: -0.045em;
+  margin-bottom: 20px;
   background: var(--gradient-brand);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-.hero p {
-  font-size: 1.22rem;
+/* Hero body copy */
+.hero-desc {
+  font-size: 1.08rem;
   color: var(--text-secondary);
-  max-width: 660px;
-  margin: 0 auto 38px;
+  max-width: 480px;
+  margin-bottom: 32px;
   font-weight: 400;
-  line-height: 1.65;
+  line-height: 1.7;
 }
 
+/* CTA row */
 .hero-actions {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 16px;
-  margin-bottom: 44px;
-}
-
-.hero-features-strip {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 28px;
-  font-family: var(--font-mono);
-  font-size: 0.82rem;
-  color: var(--text-tertiary);
+  gap: 14px;
+  margin-bottom: 28px;
   flex-wrap: wrap;
 }
 
-.hero-features-strip span {
+/* Primary hero CTA — solid accent fill, rounded */
+.btn-hero-primary {
   display: inline-flex;
   align-items: center;
+  gap: 8px;
+  padding: 12px 22px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  background: var(--accent);
+  color: #ffffff;
+  border: 1px solid var(--accent);
+  box-shadow: var(--shadow-button-primary);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, background 0.15s ease;
+}
+
+.btn-hero-primary:hover {
+  background: var(--accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(59, 130, 246, 0.4), 0 0 0 1px var(--accent);
+}
+
+.btn-hero-primary:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.btn-hero-primary:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 3px;
+}
+
+/* Secondary hero link — low emphasis */
+.hero-link-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-decoration: none;
+  padding: 4px 0;
+  border-bottom: 1px solid transparent;
+  transition: color 0.2s ease, border-color 0.2s ease, gap 0.2s ease;
+}
+
+.hero-link-secondary:hover {
+  color: var(--text-primary);
+  border-bottom-color: var(--border-strong);
+  gap: 8px;
+}
+
+/* Trust badge row — single compact line */
+.hero-trust-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.trust-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.78rem;
+  font-family: var(--font-mono);
+  color: var(--text-tertiary);
+  font-weight: 500;
+}
+
+.trust-divider {
+  width: 1px;
+  height: 14px;
+  background: var(--border-subtle);
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   HERO VISUAL — Browser / App Frame
+   ========================================================================== */
+
+.hero-visual {
+  position: relative;
+}
+
+/* Outer browser chrome frame */
+.app-frame {
+  background: var(--bg-canvas);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-card),
+              0 0 0 1px var(--border-hairline),
+              0 40px 80px -20px rgba(0, 0, 0, 0.65);
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.hero-visual:hover .app-frame {
+  box-shadow: var(--shadow-card-hover),
+              0 0 0 1px var(--accent-border),
+              0 50px 100px -20px rgba(0, 0, 0, 0.8);
+  border-color: var(--border-strong);
+}
+
+/* Browser toolbar bar */
+.app-frame-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 16px;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.app-frame-url {
+  display: flex;
+  align-items: center;
   gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-tertiary);
+  background: var(--bg-inset);
   padding: 4px 10px;
   border-radius: var(--radius-sm);
-  background: var(--bg-card);
   border: 1px solid var(--border-hairline);
-  transition: all 0.2s ease;
+  flex: 1;
+  max-width: 220px;
 }
 
-.hero-features-strip span:hover {
-  color: var(--text-primary);
-  border-color: var(--border-strong);
-  transform: translateY(-1px);
+/* Scrollable content body */
+.app-frame-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--bg-page);
 }
 
-/* Live Interactive Demo Window */
+/* Legacy .demo-window is no longer used in the hero,
+   but keep a minimal rule so the selector doesn't error
+   if referenced elsewhere in testing. */
 .demo-window {
   background: var(--bg-canvas);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
   padding: 24px;
-  max-width: 740px;
-  margin: 52px auto 0;
   text-align: left;
   box-shadow: var(--shadow-card);
   position: relative;
-  transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+  transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .demo-window:hover {
@@ -1159,12 +1256,25 @@ footer a:hover {
 .stagger-4 { transition-delay: 0.32s; }
 
 /* Responsive Layout */
+@media (max-width: 1024px) {
+  .hero {
+    grid-template-columns: 1fr;
+    gap: 52px;
+    text-align: center;
+    padding: 80px 0 60px;
+  }
+  .hero-text { display: flex; flex-direction: column; align-items: center; }
+  .hero-desc { max-width: 600px; }
+  .hero-trust-row { justify-content: center; }
+  .hero-visual { max-width: 620px; margin: 0 auto; }
+  .app-frame-url { max-width: 180px; }
+}
+
 @media (max-width: 960px) {
   .bento-grid { grid-template-columns: 1fr; }
   .bento-card.span-2 { grid-column: span 1; }
   .steps-grid { grid-template-columns: repeat(2, 1fr); }
   h1 { font-size: 2.8rem; }
-  .hero p { font-size: 1.1rem; }
 }
 
 @media (max-width: 600px) {
@@ -1172,9 +1282,10 @@ footer a:hover {
   nav a:not(.btn) { display: none; }
   h1 { font-size: 2.2rem; }
   .hero-actions { flex-direction: column; width: 100%; }
-  .hero-actions .btn { width: 100%; }
+  .btn-hero-primary { width: 100%; justify-content: center; }
   .tweet-stats { gap: 12px; font-size: 0.75rem; }
   .section { padding: 70px 0; }
+  .hero { padding: 60px 0 40px; }
 }
 
 /* Accessibility: Respect Reduced Motion */
@@ -1188,6 +1299,11 @@ footer a:hover {
   .reveal {
     opacity: 1 !important;
     transform: none !important;
+  }
+  .hero-text-anim, .hero-visual-anim {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
   }
   .bg-mesh {
     animation: none !important;
