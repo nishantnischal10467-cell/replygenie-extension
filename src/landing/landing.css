@@ -122,25 +122,48 @@ body {
   background-size: 32px 32px;
 }
 
-/* Ambient glow mesh */
+/* Ambient glow mesh — primary blue orb behind hero */
 .bg-mesh {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 50%;
   transform: translateX(-50%);
   width: 100vw;
-  height: 800px;
+  height: 900px;
   background: var(--gradient-mesh);
   pointer-events: none;
   z-index: 0;
-  animation: ambientDrift 14s ease-in-out infinite alternate;
+  animation: ambientDrift 18s ease-in-out infinite alternate;
+  will-change: transform, opacity;
+}
+
+/* Second ambient orb — cyan tint, mid-page */
+.bg-mesh-2 {
+  position: fixed;
+  top: 55vh;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80vw;
+  height: 600px;
+  background: radial-gradient(circle at 50% 30%, rgba(0, 223, 143, 0.07), rgba(59, 130, 246, 0.04) 45%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+  animation: ambientDrift2 22s ease-in-out infinite alternate;
+  will-change: transform, opacity;
 }
 
 @keyframes ambientDrift {
-  0% { transform: translateX(-50%) scale(1); opacity: 0.85; }
-  50% { transform: translateX(-48%) scale(1.05); opacity: 1; }
-  100% { transform: translateX(-52%) scale(0.98); opacity: 0.9; }
+  0%   { transform: translateX(-50%) scale(1);    opacity: 0.80; }
+  50%  { transform: translateX(-47%) scale(1.06); opacity: 1;    }
+  100% { transform: translateX(-53%) scale(0.97); opacity: 0.85; }
 }
+
+@keyframes ambientDrift2 {
+  0%   { transform: translateX(-50%) scale(1);    opacity: 0.60; }
+  40%  { transform: translateX(-45%) scale(1.08); opacity: 0.90; }
+  100% { transform: translateX(-55%) scale(0.95); opacity: 0.65; }
+}
+
 
 .container {
   max-width: 1140px;
@@ -357,20 +380,30 @@ nav a:hover::after {
   text-align: left;
 }
 
-/* Left column entrance */
-.hero-text-anim {
+/* Left column: children stagger in individually */
+.hero-text-anim > * {
   opacity: 0;
-  transform: translateY(24px);
-  animation: heroSlideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  animation-delay: 0.1s;
+  transform: translateY(20px);
+  animation: heroSlideUp 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* Right column entrance — slight delay */
+/* badge */
+.hero-text-anim > :nth-child(1) { animation-delay: 0.05s; }
+/* h1 */
+.hero-text-anim > :nth-child(2) { animation-delay: 0.18s; }
+/* desc paragraph */
+.hero-text-anim > :nth-child(3) { animation-delay: 0.30s; }
+/* CTA actions row */
+.hero-text-anim > :nth-child(4) { animation-delay: 0.42s; }
+/* trust row */
+.hero-text-anim > :nth-child(5) { animation-delay: 0.54s; }
+
+/* Right column entrance — enters slightly after text column */
 .hero-visual-anim {
   opacity: 0;
   transform: translateY(32px);
   animation: heroSlideUp 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  animation-delay: 0.3s;
+  animation-delay: 0.28s;
 }
 
 @keyframes heroSlideUp {
@@ -468,17 +501,19 @@ h1 {
 
 .btn-hero-primary:hover {
   background: var(--accent-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 28px rgba(59, 130, 246, 0.4), 0 0 0 1px var(--accent);
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 10px 32px rgba(59, 130, 246, 0.45), 0 0 0 1px var(--accent), var(--accent-glow);
 }
 
 .btn-hero-primary:active {
-  transform: translateY(0) scale(0.98);
+  transform: translateY(0) scale(0.97);
+  box-shadow: var(--shadow-button-primary);
 }
 
 .btn-hero-primary:focus-visible {
   outline: 2px solid var(--border-focus);
   outline-offset: 3px;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.25);
 }
 
 /* Secondary hero link — low emphasis */
@@ -499,6 +534,12 @@ h1 {
   color: var(--text-primary);
   border-bottom-color: var(--border-strong);
   gap: 8px;
+}
+
+.hero-link-secondary:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 4px;
+  border-radius: 2px;
 }
 
 /* Trust badge row — single compact line */
@@ -913,9 +954,21 @@ h1 {
 }
 
 .btn-sm-primary.copied {
-  background: var(--accent-cyan);
-  color: #090a0f;
-  box-shadow: 0 4px 12px rgba(0, 223, 143, 0.3);
+  background: #10b981;
+  color: #ffffff;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.35);
+  transform: scale(1.04);
+}
+
+/* Pop-in animation for the checkmark SVG when it appears */
+.btn-sm-primary.copied svg {
+  animation: checkPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes checkPop {
+  0%  { transform: scale(0) rotate(-20deg); opacity: 0; }
+  60% { transform: scale(1.2) rotate(4deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
 }
 
 /* Section Typography */
@@ -1163,19 +1216,20 @@ h1 {
 }
 
 .faq-icon {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   flex-shrink: 0;
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.2s ease;
+  /* Chevron rotates 180° from pointing-down to pointing-up */
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s ease;
   color: var(--text-tertiary);
 }
 
 .faq-item:hover .faq-icon {
-  color: var(--text-primary);
+  color: var(--text-secondary);
 }
 
 .faq-item.active .faq-icon {
-  transform: rotate(45deg);
+  transform: rotate(180deg);
   color: var(--accent);
 }
 
@@ -1237,7 +1291,381 @@ footer a:hover {
   font-size: 0.92rem;
 }
 
+
+/* ==========================================================================
+   WORKFLOW SECTION — Numbered steps with UI mockup cards
+   ========================================================================== */
+
+.workflow-section {
+  position: relative;
+}
+
+.workflow-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.workflow-step {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: center;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 36px 44px;
+  box-shadow: var(--shadow-card);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+.workflow-step:hover {
+  border-color: var(--accent-border);
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-4px);
+}
+
+/* Alternate every other step: text right, mockup left */
+.workflow-step:nth-child(even) {
+  direction: rtl;
+}
+.workflow-step:nth-child(even) > * {
+  direction: ltr;
+}
+
+.workflow-step-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.workflow-num {
+  font-family: var(--font-mono);
+  font-size: 2.8rem;
+  font-weight: 800;
+  color: var(--border-subtle);
+  line-height: 1;
+  margin-bottom: 16px;
+  letter-spacing: -0.06em;
+  transition: color 0.2s ease;
+}
+
+.workflow-step:hover .workflow-num {
+  color: var(--accent);
+}
+
+.workflow-heading {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+}
+
+.workflow-desc {
+  font-size: 0.96rem;
+  color: var(--text-secondary);
+  line-height: 1.68;
+}
+
+.workflow-desc code {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  padding: 2px 6px;
+  background: var(--bg-card-hover);
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+}
+
+/* Mockup column */
+.workflow-mockup {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ==========================================================================
+   UI MOCKUP CARDS — Mini app-UI snippet components
+   ========================================================================== */
+
+.mockup-card {
+  width: 100%;
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.4), 0 0 1px 1px var(--border-hairline);
+}
+
+/* Topbar / title bar of each mockup */
+.mockup-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 14px;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-hairline);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-tertiary);
+  font-weight: 500;
+}
+
+/* Shared body padding */
+.mockup-body {
+  padding: 16px;
+}
+
+/* Field label (Options page) */
+.mockup-field-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-tertiary);
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+/* API key input row */
+.mockup-input-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-card);
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+}
+
+.mockup-input-text {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  letter-spacing: 0.02em;
+}
+
+/* Badge variants */
+.mockup-badge-green {
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
+.mockup-badge-blue {
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--accent);
+  background: var(--accent-subtle);
+  border: 1px solid var(--accent-border);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
+/* Tone pill row */
+.mockup-pills {
+  display: flex;
+  gap: 6px;
+  margin-top: 2px;
+  flex-wrap: wrap;
+}
+
+.mockup-pill {
+  padding: 3px 12px;
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
+  font-weight: 500;
+  border: 1px solid var(--border-hairline);
+  color: var(--text-tertiary);
+  background: var(--bg-card);
+}
+
+.mockup-pill.active {
+  background: var(--accent-subtle);
+  border-color: var(--accent-border);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* Chrome extension row */
+.mockup-ext-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+}
+
+.mockup-ext-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  background: var(--accent-subtle);
+  border: 1px solid var(--accent-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.72rem;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  flex-shrink: 0;
+}
+
+.mockup-ext-info {
+  flex: 1;
+}
+
+.mockup-ext-name {
+  font-weight: 600;
+  font-size: 0.82rem;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.mockup-ext-id {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-tertiary);
+}
+
+/* Toggle switch */
+.mockup-toggle {
+  width: 36px;
+  height: 20px;
+  border-radius: var(--radius-full);
+  background: var(--border-subtle);
+  position: relative;
+  flex-shrink: 0;
+}
+
+.mockup-toggle::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--text-tertiary);
+}
+
+.mockup-toggle.active {
+  background: var(--accent);
+}
+
+.mockup-toggle.active::after {
+  background: #ffffff;
+  transform: translateX(16px);
+}
+
+/* Mini tweet mockup */
+.mockup-tweet-mini {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border-hairline);
+  align-items: flex-start;
+}
+
+.mockup-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--text-primary);
+  color: var(--bg-page);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.72rem;
+  flex-shrink: 0;
+}
+
+.mockup-author {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-tertiary);
+  margin-bottom: 4px;
+}
+
+.mockup-tweet-text {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* Injected Reply button simulation */
+.mockup-inject-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent-subtle);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-full);
+  color: var(--accent);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 8px 16px;
+  gap: 6px;
+}
+
+/* Voice profile bar chart */
+.mockup-trait-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.mockup-trait-row:last-child {
+  margin-bottom: 0;
+}
+
+.mockup-trait-label {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--text-tertiary);
+  width: 82px;
+  flex-shrink: 0;
+}
+
+.mockup-bar-track {
+  flex: 1;
+  height: 5px;
+  background: var(--border-subtle);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.mockup-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent) 0%, #60a5fa 100%);
+  border-radius: var(--radius-full);
+}
+
+.mockup-trait-val {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--accent);
+  width: 32px;
+  text-align: right;
+}
+
 /* Scroll-Reveal Base Classes (IntersectionObserver) */
+
 .reveal {
   opacity: 0;
   transform: translateY(24px);
@@ -1275,6 +1703,14 @@ footer a:hover {
   .bento-card.span-2 { grid-column: span 1; }
   .steps-grid { grid-template-columns: repeat(2, 1fr); }
   h1 { font-size: 2.8rem; }
+  .workflow-step {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding: 28px 28px;
+  }
+  .workflow-step:nth-child(even) { direction: ltr; }
+  .workflow-step:nth-child(even) > * { direction: ltr; }
+  .workflow-num { font-size: 2rem; margin-bottom: 10px; }
 }
 
 @media (max-width: 600px) {
@@ -1286,6 +1722,8 @@ footer a:hover {
   .tweet-stats { gap: 12px; font-size: 0.75rem; }
   .section { padding: 70px 0; }
   .hero { padding: 60px 0 40px; }
+  .workflow-step { padding: 22px 20px; gap: 20px; }
+  .mockup-pills { flex-wrap: wrap; }
 }
 
 /* Accessibility: Respect Reduced Motion */
@@ -1296,16 +1734,62 @@ footer a:hover {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+
+  /* Reveal elements: show immediately, no slide */
   .reveal {
     opacity: 1 !important;
     transform: none !important;
+    transition: none !important;
   }
+
+  /* Hero: show all children instantly, no stagger */
+  .hero-text-anim > *,
+  .hero-visual-anim {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+
+  /* Prevent layout shift from hero parent being invisible */
   .hero-text-anim, .hero-visual-anim {
     opacity: 1 !important;
     transform: none !important;
     animation: none !important;
   }
-  .bg-mesh {
+
+  /* Card hover lifts: suppress translateY */
+  .workflow-step:hover,
+  .hero-visual:hover .app-frame {
+    transform: none !important;
+  }
+
+  /* Button hover: suppress scale, keep color change */
+  .btn-hero-primary:hover,
+  .btn-primary:hover,
+  .btn-secondary:hover,
+  .theme-toggle-btn:hover {
+    transform: none !important;
+  }
+
+  /* Stop ambient mesh drift, second orb, and badge pulse */
+  .bg-mesh,
+  .bg-mesh-2,
+  .badge-dot {
     animation: none !important;
+  }
+
+  /* Suppress copy-button icon pop animation */
+  .btn-sm-primary.copied svg {
+    animation: none !important;
+  }
+
+  /* FAQ chevron: skip rotation transition */
+  .faq-icon {
+    transition: none !important;
+  }
+
+  /* Header transition instant */
+  header {
+    transition: none !important;
   }
 }

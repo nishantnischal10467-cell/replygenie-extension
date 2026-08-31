@@ -23,7 +23,8 @@
 </head>
 <body>
 
-  <div class="bg-mesh"></div>
+  <div class="bg-mesh" aria-hidden="true"></div>
+  <div class="bg-mesh-2" aria-hidden="true"></div>
 
   <div class="container">
     <!-- Header Navigation -->
@@ -165,78 +166,131 @@
       </div>
     </section>
 
-    <!-- Bento Grid Features -->
-    <section class="section" id="features">
+    <!-- Combined Workflow: How It Works (was: Features + Installation) -->
+    <section class="section workflow-section" id="features">
+      <!-- invisible anchor so #how-it-works nav link still works -->
+      <span id="how-it-works" style="position:absolute;top:-88px;left:0" aria-hidden="true"></span>
+
       <div class="section-header reveal">
-        <div class="section-label">Engineered Features</div>
-        <h2 class="section-title">Built for meaningful engagement.</h2>
-        <p class="section-desc">No generic AI fluff. Every reply uses structured angles and learns your personal voice.</p>
+        <div class="section-label">How It Works</div>
+        <h2 class="section-title">From install to first reply in under 2 minutes.</h2>
+        <p class="section-desc">No accounts. No servers. No vendor lock-in. Four steps, then you're drafting authentic replies on X.</p>
       </div>
 
-      <div class="bento-grid">
-        <div class="bento-card span-2 reveal stagger-1">
-          <div class="bento-icon">🎯</div>
-          <h3>25 Structural Angles & Anti-Fluff Engine</h3>
-          <p>Rotates through 25 proven conversation angles — sharp questions, reframes, data insights, and counter-perspectives — ensuring your replies never sound robotic or repetitive.</p>
-          <span class="bento-tag">PROMPT_ENGINEERING_V2</span>
+      <div class="workflow-steps">
+
+        <!-- Step 01 -->
+        <div class="workflow-step reveal stagger-1">
+          <div class="workflow-step-text">
+            <div class="workflow-num">01</div>
+            <h3 class="workflow-heading">Load the extension</h3>
+            <p class="workflow-desc">Clone the repo, open <code>chrome://extensions</code>, toggle Developer Mode, and hit <strong>Load unpacked</strong>. Done in 60 seconds.</p>
+          </div>
+          <div class="workflow-mockup">
+            <div class="mockup-card">
+              <div class="mockup-topbar">
+                <span>chrome://extensions</span>
+              </div>
+              <div class="mockup-body">
+                <div class="mockup-ext-row">
+                  <div class="mockup-ext-icon">RG</div>
+                  <div class="mockup-ext-info">
+                    <div class="mockup-ext-name">ReplyGenie</div>
+                    <div class="mockup-ext-id">Manifest V3 · local</div>
+                  </div>
+                  <div class="mockup-toggle active"></div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div class="bento-card reveal stagger-2">
-          <div class="bento-icon">🧠</div>
-          <h3>Local Voice Learning</h3>
-          <p>Quietly samples your manual replies on X to adopt your specific vocabulary, sentence structure, and style without sending data to third-party servers.</p>
-          <span class="bento-tag">CHROME_STORAGE_LOCAL</span>
+        <!-- Step 02 -->
+        <div class="workflow-step reveal stagger-2">
+          <div class="workflow-step-text">
+            <div class="workflow-num">02</div>
+            <h3 class="workflow-heading">Add your OpenAI key</h3>
+            <p class="workflow-desc">Open ReplyGenie Options and paste your <code>sk-proj-…</code> key. It lives in <code>chrome.storage.sync</code> — never sent to any third-party server.</p>
+          </div>
+          <div class="workflow-mockup">
+            <div class="mockup-card">
+              <div class="mockup-topbar">
+                <span>ReplyGenie — Options</span>
+              </div>
+              <div class="mockup-body">
+                <div class="mockup-field-label">OpenAI API Key</div>
+                <div class="mockup-input-row">
+                  <span class="mockup-input-text">sk-proj-••••••••••••••</span>
+                  <span class="mockup-badge-green">Saved ✓</span>
+                </div>
+                <div class="mockup-field-label" style="margin-top:12px">Default Tone</div>
+                <div class="mockup-pills">
+                  <span class="mockup-pill active">Witty</span>
+                  <span class="mockup-pill">Insightful</span>
+                  <span class="mockup-pill">Concise</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div class="bento-card reveal stagger-3">
-          <div class="bento-icon">⚡</div>
-          <h3>Template Short-Circuit</h3>
-          <p>Instantly suggests quick templates for common interactions (thanks, congrats, agreement) without wasting OpenAI API tokens.</p>
-          <span class="bento-tag">ZERO_TOKEN_LATENCY</span>
+        <!-- Step 03 -->
+        <div class="workflow-step reveal stagger-3">
+          <div class="workflow-step-text">
+            <div class="workflow-num">03</div>
+            <h3 class="workflow-heading">Click ✨ Reply on any post</h3>
+            <p class="workflow-desc">ReplyGenie injects a Reply button into X's action bar. One click selects a structural angle from 25 patterns and drafts a reply — no generic filler.</p>
+          </div>
+          <div class="workflow-mockup">
+            <div class="mockup-card">
+              <div class="mockup-body">
+                <div class="mockup-tweet-mini">
+                  <div class="mockup-avatar">N</div>
+                  <div>
+                    <div class="mockup-author">@naval · 2h</div>
+                    <div class="mockup-tweet-text">Leverage is earned through high-value output.</div>
+                  </div>
+                </div>
+                <div class="mockup-inject-btn">✨ Reply with ReplyGenie</div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div class="bento-card span-2 reveal stagger-4">
-          <div class="bento-icon">🔒</div>
-          <h3>Client-Side Privacy & BYO Key</h3>
-          <p>Your OpenAI API key remains exclusively inside your browser's local sync storage. All completions fire directly to OpenAI's official endpoint with zero middleman server logging.</p>
-          <span class="bento-tag">DIRECT_HTTPS_OPENAI</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- Setup Guide -->
-    <section class="section" id="how-it-works">
-      <div class="section-header reveal">
-        <div class="section-label">Installation</div>
-        <h2 class="section-title">Up and running in 2 minutes.</h2>
-        <p class="section-desc">Load unpacked directly in Chrome for personal or developer use.</p>
-      </div>
-
-      <div class="steps-grid">
-        <div class="step-box reveal stagger-1">
-          <div class="step-num">STEP 01</div>
-          <h4>Clone Repository</h4>
-          <p>Download or git clone the repo locally to your machine.</p>
-          <div class="code-snippet">git clone https://github.com/...</div>
-        </div>
-
-        <div class="step-box reveal stagger-2">
-          <div class="step-num">STEP 02</div>
-          <h4>Load Unpacked</h4>
-          <p>Open <code>chrome://extensions</code>, toggle Developer Mode, click <strong>Load unpacked</strong>.</p>
-        </div>
-
-        <div class="step-box reveal stagger-3">
-          <div class="step-num">STEP 03</div>
-          <h4>Add API Key</h4>
-          <p>Open ReplyGenie Options and paste your OpenAI key (starts with <code>sk-proj-</code>).</p>
+        <!-- Step 04 -->
+        <div class="workflow-step reveal stagger-4">
+          <div class="workflow-step-text">
+            <div class="workflow-num">04</div>
+            <h3 class="workflow-heading">Your voice learns as you post</h3>
+            <p class="workflow-desc">Each reply you post on X is silently sampled — vocabulary, sentence rhythm, directness — and stored locally to fine-tune future drafts to your style.</p>
+          </div>
+          <div class="workflow-mockup">
+            <div class="mockup-card">
+              <div class="mockup-topbar">
+                <span>Voice Profile</span>
+                <span class="mockup-badge-blue">15 samples</span>
+              </div>
+              <div class="mockup-body">
+                <div class="mockup-trait-row">
+                  <span class="mockup-trait-label">Avg. length</span>
+                  <div class="mockup-bar-track"><div class="mockup-bar" style="width:45%"></div></div>
+                  <span class="mockup-trait-val">48w</span>
+                </div>
+                <div class="mockup-trait-row">
+                  <span class="mockup-trait-label">Directness</span>
+                  <div class="mockup-bar-track"><div class="mockup-bar" style="width:78%"></div></div>
+                  <span class="mockup-trait-val">high</span>
+                </div>
+                <div class="mockup-trait-row">
+                  <span class="mockup-trait-label">Technical</span>
+                  <div class="mockup-bar-track"><div class="mockup-bar" style="width:55%"></div></div>
+                  <span class="mockup-trait-val">med</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div class="step-box reveal stagger-4">
-          <div class="step-num">STEP 04</div>
-          <h4>Start Replying</h4>
-          <p>Visit x.com, click ✨ Reply on any post, and paste the auto-copied reply.</p>
-        </div>
       </div>
     </section>
 
@@ -249,9 +303,9 @@
 
       <div class="faq-list">
         <div class="faq-item reveal stagger-1">
-          <button class="faq-question" type="button">
+          <button class="faq-question" type="button" aria-expanded="false">
             <span>Does ReplyGenie store my API key on any server?</span>
-            <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
           </button>
           <div class="faq-answer-wrapper">
             <div class="faq-answer-inner">
@@ -263,9 +317,9 @@
         </div>
 
         <div class="faq-item reveal stagger-2">
-          <button class="faq-question" type="button">
+          <button class="faq-question" type="button" aria-expanded="false">
             <span>How does the Voice Learning feature work?</span>
-            <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
           </button>
           <div class="faq-answer-wrapper">
             <div class="faq-answer-inner">
@@ -277,9 +331,9 @@
         </div>
 
         <div class="faq-item reveal stagger-3">
-          <button class="faq-question" type="button">
+          <button class="faq-question" type="button" aria-expanded="false">
             <span>Is ReplyGenie free and open-source?</span>
-            <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
           </button>
           <div class="faq-answer-wrapper">
             <div class="faq-answer-inner">
