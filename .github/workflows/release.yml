@@ -63,7 +63,7 @@ jobs:
           node --check src/options/options.js
           node -e "JSON.parse(require('fs').readFileSync('manifest.json','utf8')); console.log('manifest.json OK')"
           # Run test suite
-          npm ci
+          npm install
           npm test
 
       - name: Extract version from tag
