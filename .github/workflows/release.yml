@@ -63,6 +63,7 @@ jobs:
           node --check src/options/options.js
           node -e "JSON.parse(require('fs').readFileSync('manifest.json','utf8')); console.log('manifest.json OK')"
           # Run test suite
+          npm ci
           npm test
 
       - name: Extract version from tag
@@ -106,7 +107,7 @@ jobs:
             src/options/options.html \
             src/options/options.js \
             src/options/options.css \
-            icons/
+            public/icons/
 
 
 

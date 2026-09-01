@@ -30,12 +30,23 @@ jobs:
       - name: Prepare Pages content
         run: |
           mkdir -p _site
+          # Core HTML pages
           cp index.html _site/index.html
           cp Landingpage.html _site/Landingpage.html
-          cp -r icons _site/icons
-          if [ -f vercel.json ]; then cp vercel.json _site/; fi
+          # CSS + JS (landing page stylesheet and motion script)
+          mkdir -p _site/src/landing
+          cp src/landing/landing.css _site/src/landing/landing.css
+          cp src/landing/demo.js     _site/src/landing/demo.js
+          cp src/landing/motion.js   _site/src/landing/motion.js
+          # Favicon and brand icons (stored in public/ in this repo)
+          cp -r public/. _site/
+          # Copy any root-level favicon files that exist
+          for f in favicon.ico favicon.svg favicon-96x96.png apple-touch-icon.png site.webmanifest; do
+            [ -f "$f" ] && cp "$f" "_site/$f" || true
+          done
           echo "Pages content ready:"
           ls -la _site/
+
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

@@ -60,6 +60,9 @@ jobs:
           node --check src/options/options.js
           echo "All JS files passed syntax check ✅"
 
+      - name: Install dependencies
+        run: npm ci
+
       - name: Run Jest Test Suite
         run: |
           npm test
