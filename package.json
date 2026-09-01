@@ -4,8 +4,8 @@
   "private": true,
   "description": "Test suite for ReplyGenie extension logic (pure functions only — no Chrome APIs).",
   "scripts": {
-    "test": "jest --runInBand",
-    "test:eval": "jest src/tests/eval.test.js --verbose"
+    "test": "npx --no-install jest --runInBand",
+    "test:eval": "npx --no-install jest src/tests/eval.test.js --verbose"
   },
   "devDependencies": {
     "fake-indexeddb": "^6.2.5",
