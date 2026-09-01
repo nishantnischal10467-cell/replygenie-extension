@@ -58,6 +58,9 @@ jobs:
           node --check src/content/content.js
           node --check src/popup/popup.js
           node --check src/options/options.js
+          # Landing page scripts
+          node --check src/landing/demo.js
+          node --check src/landing/motion.js
           echo "All JS files passed syntax check ✅"
 
       - name: Install dependencies
@@ -66,7 +69,6 @@ jobs:
       - name: Run Jest Test Suite
         run: |
           npm test
-
 
       - name: Validate manifest.json
         run: |
@@ -89,10 +91,11 @@ jobs:
 
       - name: Check icons exist
         run: |
-          for icon in icons/icon16.png icons/icon48.png icons/icon128.png; do
+          for icon in icons/icon16.png icons/icon48.png icons/icon128.png public/icons/icon16.png public/icons/icon48.png public/icons/icon128.png; do
             if [ ! -f "$icon" ]; then
               echo "Missing icon: $icon ❌"
               exit 1
             fi
           done
-          echo "All icons present ✅"
+          echo "All icons present in icons/ and public/icons/ ✅"
+

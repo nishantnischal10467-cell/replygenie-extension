@@ -107,6 +107,7 @@ jobs:
             src/options/options.html \
             src/options/options.js \
             src/options/options.css \
+            icons/ \
             public/icons/
 
 
